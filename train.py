@@ -99,9 +99,9 @@ if __name__ == "__main__":
     val_dir = cfg.val_dir
 
     if cfg.vessl == 1:
-        model_dir = '/output/train/' + date + '/model/'
+        model_dir = 'output/train/' + date + '/model/'
     elif cfg.vessl == 0:
-        model_dir = './output/train/' + date + '/model/'
+        model_dir = 'output/train/' + date + '/model/'
     if not os.path.exists(model_dir):
         os.makedirs(model_dir)
 
@@ -189,7 +189,7 @@ if __name__ == "__main__":
             writer.add_scalar("Training/Loss", avg_loss / n, e)
 
         if e == start_episode or e % eval_every == 0:
-            average_delay, average_move, average_priority_ratio = evaluate(val_dir)
+            average_delay, average_move, average_priority_ratio = evaluate(val_dir)         # 여기가 되게 오래 걸리네
 
             with open(log_dir + "validation_log.csv", 'a') as f:
                 f.write('%d,%1.4f, %1.4f, %1.4f\n' % (e, average_delay, average_move, average_priority_ratio))
