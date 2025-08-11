@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5f35f41b72c445c7a854852c12e4d22, type: 3}
+  m_Name: J-63
+  m_EditorClassIdentifier: 
+  Start_Dates: 9a010000ea010000ff0100002102000045020000530200006102000076020000
+  Finish_Dates: ea010000ff01000021020000450200005302000061020000760200008e020000
+  Operation_Type:
+  - "\uD654\uBB3C\uCC3D"
+  - P/T
+  - "\uD654\uBB3C\uCC3D\uC871\uCCA0"
+  - "\uD654\uBB3C\uCC3D\uBA54\uACF5"
+  - "\uC2DC\uC6B4\uC804"
+  - C/T
+  - G/T
+  - "\uC778\uB3C4\uC900\uBE44"
+  Operation_Name:
+  - O-63-1
+  - O-63-2
+  - O-63-3
+  - O-63-4
+  - O-63-5
+  - O-63-6
+  - O-63-7
+  - O-63-8
+  Entry_Index: 268
+  Ship_Name: J-63
+  Ship_Index: 62
+  Ship_Type: LNG
+  Category: 8
+  Launching_Date: 410
+  Delivery_Date: 654
+  Operation_Index: 267
+  Order: 1
+  Duration: 80
+  Interruption: N
+  Fixed_Duration: 0

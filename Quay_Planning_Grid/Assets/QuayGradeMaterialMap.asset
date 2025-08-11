@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffbd55f91406d431a875613397865652, type: 3}
+  m_Name: QuayGradeMaterialMap
+  m_EditorClassIdentifier: 
+  gradeA: {fileID: 2100000, guid: 0d6765cf389cd4fa9933c685e3dbadb2, type: 2}
+  gradeB: {fileID: 2100000, guid: 656ad9823d5bd4f7eb1f6a6e99a021a2, type: 2}
+  gradeC: {fileID: 2100000, guid: a2b7b7e061baf402a88304829cde5b3d, type: 2}
+  gradeD: {fileID: 2100000, guid: 1180282047a814f8d88314db781fb930, type: 2}
+  gradeE: {fileID: 2100000, guid: e4c52fa9041a745cc89a9e49d560434d, type: 2}
+  gradeN: {fileID: 2100000, guid: 4478037b48d714426b44b86412d2adec, type: 2}
+  engagedMaterial: {fileID: 2100000, guid: deb4134b600ab4b3b85e146518696849, type: 2}
