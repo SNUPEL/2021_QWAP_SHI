@@ -8,7 +8,8 @@ using System;
 public class AIController : MonoBehaviour
 {
     public static AIController Instance { get; private set; }
-    public int currIndex { get; private set; } = -1;  // -1 means not on any quay
+    //public int currIndex { get; private set; } = -1;  // -1 means not on any quay
+    private int moveCount = 0;
 
     public string currentTarget = "";
     private string previousTarget = "";
@@ -28,6 +29,7 @@ public class AIController : MonoBehaviour
     private bool hasBeenDelivered = false; // prevent multiple triggers
     public static int DeliveredCount => deliveredCount;
     public static int maxdelivery = 80;
+    private ShipRuntime shipRuntime;
 
     private void Awake()
     {
@@ -39,15 +41,26 @@ public class AIController : MonoBehaviour
         if (sinkObj != null)
         {
             gridOrigin = GameObject.Find("Sink").transform;
+
         }
+        shipRuntime = GetComponent<ShipRuntime>();
+
 
     }
     public void MoveTo(string locationName)
     {
-        if (string.IsNullOrWhiteSpace(locationName)) return;
+        if (string.IsNullOrWhiteSpace(locationName))
+            return;
 
+        if (string.Equals(locationName.Trim(), "Source", StringComparison.OrdinalIgnoreCase))
+            return;
         string trimmedLocation = locationName.Trim();
-
+        // Don't move if the target location is the same as currentTarget
+        if (trimmedLocation.Equals(currentTarget, StringComparison.OrdinalIgnoreCase))
+        {
+            // Already at this location, no need to move
+            return;
+        }
         var target = WPManager.Instance.GetWaypoint(trimmedLocation);
         if (target == null)
         {
@@ -60,39 +73,42 @@ public class AIController : MonoBehaviour
 
         // Update current target
         currentTarget = trimmedLocation;
+        moveCount++;
+        if (shipRuntime != null)
+        {
+            shipRuntime.IncrementMoveCount();
+        }
+       
 
         // If we were on a quay and are leaving it (oldTarget != currentTarget), free the old quay
-        if (!string.IsNullOrEmpty(oldTarget) && oldTarget != currentTarget && IsQuayWall(oldTarget))
+
+        if (!string.IsNullOrWhiteSpace(oldTarget) && !oldTarget.Equals("Source", StringComparison.OrdinalIgnoreCase) && QuayInfoPanel.Instance != null)
         {
-            int prevIndex = quayVisualizer.quayScoreDB.quayWallNames.IndexOf(oldTarget);
-            if (prevIndex >= 0)
-            {
-                quayVisualizer.SetQuayEngagement(prevIndex, false);
-            }
+            quayVisualizer.SetQuayEngagement(oldTarget, false);
+            QuayInfoPanel.Instance?.NotifyShipChange(oldTarget, null);
+
         }
 
-        // If arriving at a quay, set it engaged
-        if (IsQuayWall(currentTarget))
+        if (IsQuayWall(currentTarget) && QuayInfoPanel.Instance != null)
         {
-            currIndex = quayVisualizer.quayScoreDB.quayWallNames.IndexOf(currentTarget);
-            if (currIndex >= 0)
-            {
-                quayVisualizer.SetQuayEngagement(currIndex, true);
-            }
+            quayVisualizer.SetQuayEngagement(currentTarget, true);
+            ShipRuntime ship = GetComponent<ShipRuntime>();
+            QuayInfoPanel.Instance?.NotifyShipChange(currentTarget, ship);
+   
         }
-
         // Teleport/move to the waypoint
         transform.position = target.transform.position;
 
         // If going to Sink, free previous quay (if any), then deliver
         if (currentTarget.Equals("Sink", System.StringComparison.OrdinalIgnoreCase) && !hasBeenDelivered)
         {
-            if (!string.IsNullOrEmpty(oldTarget) && IsQuayWall(oldTarget))
-            {
-                int prevIdx = quayVisualizer.quayScoreDB.quayWallNames.IndexOf(oldTarget);
-                if (prevIdx >= 0)
-                    quayVisualizer.SetQuayEngagement(prevIdx, false);
-            }
+            //if (!string.IsNullOrEmpty(oldTarget) && IsQuayWall(oldTarget))
+            //{
+            //    int prevIdx = quayVisualizer.quayScoreDB.quayWallNames.IndexOf(oldTarget);
+            //    if (prevIdx >= 0)
+            //        quayVisualizer.SetQuayEngagement(prevIdx, false);
+            //}
+            quayVisualizer.SetQuayEngagement(oldTarget, false);
 
             MoveShipToGrid();
             hasBeenDelivered = true;

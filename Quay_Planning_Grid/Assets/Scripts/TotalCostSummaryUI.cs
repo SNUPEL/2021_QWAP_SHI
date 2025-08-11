@@ -5,7 +5,7 @@ using TMPro;
 public class TotalCostSummaryUI : MonoBehaviour
 {
     public TMP_Text lossCostText;
-    public TMP_Text delayCostText;
+    //public TMP_Text delayCostText;
     public TMP_Text moveCostText;
     public TMP_Text totalCostText;
     public TextMeshProUGUI counterText;
@@ -35,7 +35,7 @@ public class TotalCostSummaryUI : MonoBehaviour
 
         // Format and display
         lossCostText.text = $"Loss: {(totalLoss > 0 ? $"${totalLoss:N0}" : "$0")}";
-        delayCostText.text = $"Delay: {(totalDelay > 0 ? $"${totalDelay:N0}" : "$0")}";
+       // delayCostText.text = $"Delay: {(totalDelay > 0 ? $"${totalDelay:N0}" : "$0")}";
         moveCostText.text = $"Move: {(totalMove > 0 ? $"${totalMove:N0}" : "$0")}";
         totalCostText.text = $"Total: ${(total > 0 ? total.ToString("N0") : "0")}";
 
