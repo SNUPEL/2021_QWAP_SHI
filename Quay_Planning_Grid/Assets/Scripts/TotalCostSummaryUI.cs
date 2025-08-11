@@ -51,5 +51,5 @@ public class TotalCostSummaryUI : MonoBehaviour
         activeShips.AddRange(FindObjectsOfType<ShipRuntime>());
     }
 
-    
+
 }

@@ -5,6 +5,7 @@ using TMPro;
 
 public class QuayInfoPanel : MonoBehaviour
 {
+    public static QuayInfoPanel Instance { get; private set; }
 
     public TMP_Text quayIdText;
     public TMP_Text statusText;
@@ -15,7 +16,22 @@ public class QuayInfoPanel : MonoBehaviour
     private ShipRuntime currentShip;
     private int lastSimDay = -1;
 
+    private string currentQuayId = "";
+    private int currentQuayIndex = -1;
 
+    void Awake()
+    {
+        Instance = this;
+    }
+
+    public int CurrentQuayIndex => currentQuayIndex;
+
+    public void ShowQuay(string quayId, int quayIndex, ShipRuntime ship, int currentSimDay)
+    {
+        currentQuayId = quayId;
+        currentQuayIndex = quayIndex;
+        UpdateQuayWallInfo(quayId, ship, currentSimDay);
+    }
     public void UpdateQuayWallInfo(string quayId, ShipRuntime ship, int currentSimDay)
     {
         quayIdText.text = $"Quay: {quayId}";
@@ -79,4 +95,6 @@ public class QuayInfoPanel : MonoBehaviour
             }
         }
     }
+    
+
 }

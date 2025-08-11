@@ -14,6 +14,7 @@ public class ShipBuilder : MonoBehaviour
 
     private List<ShipData> pendingShips = new List<ShipData>();
     private List<GameObject> activeShips = new List<GameObject>();
+    public IReadOnlyList<GameObject> ActiveShips => activeShips.AsReadOnly();
 
     private int shipsToSpawn = 80; // limit for testing
     
@@ -25,7 +26,7 @@ public class ShipBuilder : MonoBehaviour
 
     private void Start()
     {
-        Time.timeScale = 15.0f;
+        Time.timeScale = 25.0f;
         simData = FindObjectOfType<Simulation_Data>();
         LoadAndSortShips();
         SimulationClock.Instance.OnTimeChanged += HandleTimeChanged;
@@ -112,4 +113,5 @@ public class ShipBuilder : MonoBehaviour
 
         shipsToSpawn = 80;
     }
+
 }

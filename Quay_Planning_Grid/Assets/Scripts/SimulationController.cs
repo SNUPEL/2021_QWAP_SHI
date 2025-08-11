@@ -24,12 +24,12 @@ public class SimulationController : MonoBehaviour
         Debug.Log("Simulation reset.");
 
         // 1. Destroy all active ships
-        var ships = FindObjectsOfType<ShipRuntime>();
+        //var ships = FindObjectsOfType<ShipRuntime>();
 
-        foreach (var ship in ships)
-        {
-            Destroy(ship.gameObject);
-        }
+        //foreach (var ship in ships)
+        //{
+        //    Destroy(ship.gameObject);
+        //}
 
         // 2. Reset the simulation clock
         if (SimulationClock.Instance != null)
@@ -58,10 +58,13 @@ public class SimulationController : MonoBehaviour
         if (costUI != null)
             costUI.RefreshActiveShipList();
 
-        // 7. Optionally reset the camera or other views
+        // 7. Reset the delivered ships counter
+        AIController.ResetDeliveredCount();
+
+        // 8. Optionally reset the camera or other views
         //Camera.main.transform.position = new Vector3(0, 50, -50); // Or whatever your default is
 
-        // 8. Optionally disable SimulationClock (if it uses Update or Coroutines)
+        // 9. Optionally disable SimulationClock (if it uses Update or Coroutines)
         //StopAllCoroutines(); // if you started any in this controller
 
         Debug.Log("Simulation state reset complete.");
