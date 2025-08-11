@@ -83,7 +83,7 @@ public class ShipController : MonoBehaviour
 
         if (currentVisualizer != null && infoPanel != null)
         {
-            currentVisualizer.ResetGradesOnly(); // NEW method
+            currentVisualizer.ResetGradesOnly();
 
             string shipType = selectedShip.Data.Ship_Type;
             string operation = selectedShip.Data.Operation_Name.Count > 0 ? selectedShip.Data.Operation_Type[0] : null;
@@ -102,13 +102,21 @@ public class ShipController : MonoBehaviour
         if (quayInfoPanelObject != null)
             quayInfoPanelObject.SetActive(false);
     }
+    
+
     void OnQuayWallSelected(GameObject quayWall)
     {
         string quayName = quayWall.name;
         Debug.Log("Clicked quay wall: " + quayName);
         quayInfoPanelObject.SetActive(true);
 
-        ShipRuntime foundShip = FindShipAtQuay(quayName);
+        //int quayIndex = quayScoreDB.quayWallNames.IndexOf(quayName);
+        //if (quayIndex < 0)
+        //{
+        //    Debug.LogWarning($"Quay name '{quayName}' not found in quayWallNames list.");
+        //    return;
+        //}
+        ShipRuntime foundShip = currentVisualizer.FindShipAtQuay(quayName);
 
         if (infoPanel_1 != null)
             infoPanel_1.UpdateQuayWallInfo(quayName, foundShip, currentSimDay);
@@ -120,33 +128,34 @@ public class ShipController : MonoBehaviour
         if (infoPanelObject != null)
             infoPanelObject.SetActive(false);
     }
+   
 
-    ShipRuntime FindShipAtQuay(string quayName)
-    {
-        ShipRuntime[] ships = FindObjectsOfType<ShipRuntime>();
+    //ShipRuntime FindShipAtQuay(string quayName)
+    //{
+    //    ShipRuntime[] ships = FindObjectsOfType<ShipRuntime>();
 
-        foreach (var ship in ships)
-        {
-            // Find the latest log entry up to currentSimDay
-            SimulationData latestLog = null;
-            foreach (var log in ship.Logs)
-            {
-                if (log.Time <= currentSimDay)
-                {
-                    if (latestLog == null || log.Time > latestLog.Time)
-                        latestLog = log;
-                }
-            }
+    //    foreach (var ship in ships)
+    //    {
+    //        // Find the latest log entry up to currentSimDay
+    //        SimulationData latestLog = null;
+    //        foreach (var log in ship.Logs)
+    //        {
+    //            if (log.Time <= currentSimDay)
+    //            {
+    //                if (latestLog == null || log.Time > latestLog.Time)
+    //                    latestLog = log;
+    //            }
+    //        }
 
-            // If latest log exists and location matches quayName, return this ship
-            if (latestLog != null && latestLog.Location == quayName)
-            {
-                return ship;
-            }
-        }
+    //        // If latest log exists and location matches quayName, return this ship
+    //        if (latestLog != null && latestLog.Location == quayName)
+    //        {
+    //            return ship;
+    //        }
+    //    }
 
-        return null;
-    }
+    //    return null;
+    //}
     void ClearUIAndVisualizer()
     {
         Debug.Log("Clicked outside of ship or quay — clearing visuals and UI.");

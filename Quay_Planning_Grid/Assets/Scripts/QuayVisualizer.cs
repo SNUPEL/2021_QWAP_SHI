@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 public class QuayVisualizer : MonoBehaviour
 {
@@ -24,7 +25,12 @@ public class QuayVisualizer : MonoBehaviour
         else Destroy(gameObject);
 
         // init engagement array sized to renderer list (safe)
-        int n = Mathf.Max(28, quayWallRenderers?.Count ?? 28);
+        //int n = Mathf.Max(28, quayWallRenderers?.Count ?? 28);
+        //isQuayEngaged = new bool[n];
+        int n = Mathf.Max(
+    quayScoreDB?.quayWallNames?.Count ?? 28,
+    quayWallRenderers?.Count ?? 28
+);
         isQuayEngaged = new bool[n];
     }
 
@@ -45,7 +51,7 @@ public class QuayVisualizer : MonoBehaviour
         // Refresh info panel if it is showing this quay
         if (QuayInfoPanel.Instance != null && QuayInfoPanel.Instance.CurrentQuayIndex == quayIndex)
         {
-            ShipRuntime ship = engaged ? FindShipAtQuay(quayIndex) : null; // You must implement this
+            ShipRuntime ship = engaged ? FindShipAtQuay(quayScoreDB.quayWallNames[quayIndex]) : null;
             QuayInfoPanel.Instance.UpdateQuayWallInfo(
                 quayScoreDB.quayWallNames[quayIndex],
                 ship,
@@ -53,7 +59,42 @@ public class QuayVisualizer : MonoBehaviour
             );
         }
     }
+    //public void SetQuayEngagement(string quayName, bool engaged)
+    //{
+    //    int quayIndex = quayScoreDB.quayWallNames.IndexOf(quayName);
+    //    if (quayIndex < 0)
+    //    {
+    //        Debug.LogWarning($"SetQuayEngagement: quayName '{quayName}' not found.");
+    //        return;
+    //    }
+    //    SetQuayEngagement(quayIndex, engaged);
+    //}
+   public void SetQuayEngagement(string quayName, bool engaged)
+{
+    if (string.IsNullOrWhiteSpace(quayName))
+    {
+        //Debug.LogWarning("SetQuayEngagement called with null or empty quayName");
+        return;
+    }
 
+    // Optionally ignore special names like "Source"
+    if (string.Equals(quayName.Trim(), "Source", StringComparison.OrdinalIgnoreCase))
+    {
+        // Debug.Log($"Ignoring non-quay name: {quayName}");
+        return;
+    }
+
+    int quayIndex = quayScoreDB.quayWallNames.FindIndex(
+        q => string.Equals(q.Trim(), quayName.Trim(), StringComparison.OrdinalIgnoreCase)
+    );
+
+    if (quayIndex < 0)
+    {
+        Debug.LogWarning($"SetQuayEngagement: quayName '{quayName}' not found or invalid index");
+        return;
+    }
+    SetQuayEngagement(quayIndex, engaged);
+}
     // Called when user selects a ship to show grades for that ship/operation
     public void HighlightQuayGrades(string shipType, string operation)
     {
@@ -134,211 +175,81 @@ public class QuayVisualizer : MonoBehaviour
         }
     }
 
-    public ShipRuntime FindShipAtQuay(int quayIndex)
+    //public ShipRuntime FindShipAtQuay(int quayIndex)
+    //{
+    //    foreach (var shipGO in ShipBuilder.Instance.ActiveShips)
+    //    {
+    //        ShipRuntime shipRuntime = shipGO.GetComponent<ShipRuntime>();
+    //        if (shipRuntime != null)
+    //        {
+    //            AIController aiController = shipGO.GetComponent<AIController>();
+    //            if (aiController != null && aiController.currIndex == quayIndex)
+    //            {
+    //                return shipRuntime;
+    //            }
+    //        }
+    //    }
+    //    return null;
+    //}
+    public ShipRuntime FindShipAtQuay(string quayName)
     {
-        foreach (var shipGO in ShipBuilder.Instance.ActiveShips)
+        if (string.IsNullOrWhiteSpace(quayName))
         {
-            ShipRuntime shipRuntime = shipGO.GetComponent<ShipRuntime>();
-            if (shipRuntime != null)
+            Debug.LogWarning("FindShipAtQuay called with null or empty quayName");
+            return null;
+        }
+
+        // Ignore reserved names
+        if (string.Equals(quayName.Trim(), "Source", StringComparison.OrdinalIgnoreCase))
+        {
+            Debug.Log($"Ignoring non-quay name: {quayName}");
+            return null;
+        }
+
+        // Normalize and find the index
+        string normalizedName = quayName.Trim();
+        int quayIndex = quayScoreDB.quayWallNames.FindIndex(
+            q => string.Equals(q.Trim(), normalizedName, StringComparison.OrdinalIgnoreCase)
+        );
+
+        if (quayIndex < 0)
+        {
+            Debug.LogWarning($"Quay name '{quayName}' not found in quayWallNames list.");
+            return null;
+        }
+
+        // Look for a ship whose AI target matches (ignoring case and spaces)
+        foreach (ShipRuntime ship in FindObjectsOfType<ShipRuntime>())
+        {
+            AIController ai = ship.GetComponent<AIController>();
+            if (ai != null && string.Equals(ai.currentTarget?.Trim(), normalizedName, StringComparison.OrdinalIgnoreCase))
             {
-                AIController aiController = shipGO.GetComponent<AIController>();
-                if (aiController != null && aiController.currIndex == quayIndex)
-                {
-                    return shipRuntime;
-                }
+                return ship;
             }
         }
+
         return null;
     }
-
 #if UNITY_EDITOR
     [ContextMenu("Auto-Fill Quay Renderers")]
-    public void AutoFillRenderers()
+public void AutoFillRenderers()
+{
+    quayWallRenderers.Clear();
+    foreach (string quayName in quayScoreDB.quayWallNames)
     {
-        quayWallRenderers.Clear();
-        foreach (string quayName in quayScoreDB.quayWallNames)
+        GameObject quayObj = GameObject.Find(quayName);
+        if (quayObj != null && quayObj.TryGetComponent(out Renderer rend))
         {
-            GameObject quayObj = GameObject.Find(quayName);
-            if (quayObj != null && quayObj.TryGetComponent(out Renderer rend))
-            {
-                quayWallRenderers.Add(rend);
-            }
-            else
-            {
-                Debug.LogWarning($"Quay object '{quayName}' not found or has no Renderer.");
-            }
+            quayWallRenderers.Add(rend);
         }
-
-        // ensure array length matches
-        isQuayEngaged = new bool[Mathf.Max(28, quayWallRenderers.Count)];
+        else
+        {
+            Debug.LogWarning($"Quay object '{quayName}' not found or has no Renderer.");
+        }
     }
+
+    // ensure array length matches
+    isQuayEngaged = new bool[Mathf.Max(28, quayWallRenderers.Count)];
+}
 #endif
 }
-//using UnityEngine;
-//using System.Collections.Generic;
-
-//public class QuayVisualizer : MonoBehaviour
-//{
-
-//    public static QuayVisualizer Instance { get; private set; }
-
-//    public QuayData quayScoreDB;
-//    public GradeMaterialMap materialMap;
-//    public List<Renderer> quayWallRenderers; // 28 renderers for A1–E8 (in same order as quayScoreDB.quayWallNames)
-//    private bool[] isQuayEngaged = new bool[28];
-//    public Material defaultMat;
-//    //private void Awake()
-//    //{
-//    //    engagedFlags = new bool[quayWallRenderers.Count];
-//    //}
-
-//    public void SetQuayEngagement(int quayIndex, bool engaged)
-//    {
-//        if (quayIndex < 0 || quayIndex >= quayWallRenderers.Count)
-//        {
-//            Debug.LogWarning($"Invalid quayIndex {quayIndex}");
-//            return;
-//        }
-//        isQuayEngaged[quayIndex] = engaged;
-//        // Update material immediately
-//        UpdateQuayMaterial(quayIndex);
-//    }
-
-//    void UpdateQuayMaterial(int quayIndex)
-//    {
-//        var currentGrade = QuayScoreGrade.N; // default fallback
-
-//        // Optional: You could get grade info from your data model here if you want to keep showing grades
-//        // For now, just set material based on engagement
-
-//        bool engaged = isQuayEngaged[quayIndex];
-//        Material mat = materialMap.GetMaterial(currentGrade, engaged);
-//        quayWallRenderers[quayIndex].material = mat;
-//    }
-
-//    // Called when a ship is selected
-//    public void HighlightQuayGrades(string shipType, string operation)
-//    {
-//        var shipEntry = quayScoreDB.shipTypeScores.Find(s => s.shipType == shipType);
-//        if (shipEntry == null)
-//        {
-//            Debug.LogWarning($"No ship type found: {shipType}");
-//            return;
-//        }
-
-//        var opEntry = shipEntry.operations.Find(o => o.operationName == operation);
-//        if (opEntry == null)
-//        {
-//            Debug.LogWarning($"No operation found: {operation} for {shipType}");
-//            return;
-//        }
-
-//        for (int i = 0; i < quayWallRenderers.Count && i < opEntry.quayScores.Count; i++)
-//        {
-//            if (isQuayEngaged[i])
-//            {
-//                quayWallRenderers[i].material = materialMap.engagedMaterial; // Green material for engaged
-//            }
-//            else
-//            {
-//                var grade = opEntry.quayScores[i];
-//                var mat = materialMap.GetMaterial(grade);
-//                quayWallRenderers[i].material = mat;
-//            }
-//        }
-//    }
-
-
-//#if UNITY_EDITOR
-//    [ContextMenu("Auto-Fill Quay Renderers")]
-//    public void AutoFillRenderers()
-//    {
-//        quayWallRenderers.Clear();
-//        foreach (string quayName in quayScoreDB.quayWallNames)
-//        {
-//            GameObject quayObj = GameObject.Find(quayName);
-//            if (quayObj != null && quayObj.TryGetComponent(out Renderer rend))
-//            {
-//                quayWallRenderers.Add(rend);
-//            }
-//            else
-//            {
-//                Debug.LogWarning($"Quay object '{quayName}' not found or has no Renderer.");
-//            }
-//        }
-//    }
-//#endif
-
-//    public void ResetVisualizer()
-//    {
-//        if (defaultMat == null)
-//        {
-//            Debug.LogWarning("Default material not assigned in QuayVisualizer!");
-//            return;
-//        }
-
-//        for (int i = 0; i < quayWallRenderers.Count; i++)
-//        {
-//            isQuayEngaged[i] = false; // Reset engagement status
-
-//            if (quayWallRenderers[i] != null)
-//            {
-//                quayWallRenderers[i].material = defaultMat; // Reset material to default
-//            }
-//            else
-//            {
-//                Debug.LogWarning($"Renderer at index {i} is null.");
-//            }
-//        }
-
-//        Debug.Log("QuayVisualizer fully reset (no green materials).");
-//    }
-//    public void ResetGradesOnly()
-//    {
-//        for (int i = 0; i < quayWallRenderers.Count; i++)
-//        {
-//            if (!isQuayEngaged[i] && quayWallRenderers[i] != null)
-//            {
-//                quayWallRenderers[i].material = defaultMat;
-//            }
-//        }
-
-//        Debug.Log("QuayVisualizer: grades cleared, engaged ones preserved.");
-//    }
-//public void ResetVisualizer()
-//{
-//    if (defaultMat == null)
-//    {
-//        Debug.LogWarning("Default material not assigned in QuayVisualizer!");
-//        return;
-//    }
-
-//    for (int i = 0; i < quayWallRenderers.Count; i++)
-//    {
-//        isQuayEngaged[i] = false; // Reset engagement status
-
-//        if (quayWallRenderers[i] != null)
-//        {
-//            quayWallRenderers[i].material = defaultMat; // Reset material to default
-//        }
-//        else
-//        {
-//            Debug.LogWarning($"Renderer at index {i} is null.");
-//        }
-//    }
-
-//    Debug.Log("QuayVisualizer fully reset (no green materials).");
-//}
-//public void ResetGradesOnly()
-//{
-//    for (int i = 0; i < quayWallRenderers.Count; i++)
-//    {
-//        if (!isQuayEngaged[i] && quayWallRenderers[i] != null)
-//        {
-//            quayWallRenderers[i].material = defaultMat;
-//        }
-//    }
-
-//    Debug.Log("QuayVisualizer: grades cleared, engaged ones preserved.");
-//}
-//}

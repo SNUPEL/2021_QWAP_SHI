@@ -26,7 +26,7 @@ public class ShipBuilder : MonoBehaviour
 
     private void Start()
     {
-        Time.timeScale = 25.0f;
+        Time.timeScale = 30.0f;
         simData = FindObjectOfType<Simulation_Data>();
         LoadAndSortShips();
         SimulationClock.Instance.OnTimeChanged += HandleTimeChanged;
