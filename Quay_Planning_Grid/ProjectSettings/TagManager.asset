@@ -5,7 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - RL_Waypoint
-  - Sim_Waypoint
+  - SPT_Waypoint
+  - MOR_Waypoint
+  - MWKR_Waypoint
   layers:
   - Default
   - TransparentFX

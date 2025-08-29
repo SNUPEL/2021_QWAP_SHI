@@ -2,15 +2,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-//using UnityEngine.AI;
+using UnityEngine.AI;
 
-public class ShipRuntime : MonoBehaviour
+public class SPT_ShipRuntime : MonoBehaviour
 {
     public ShipData Data;
     public List<SimulationData> Logs = new List<SimulationData>();
-    private AIController controller;
+    private SPT_Controller controller;
     private HashSet<int> triggeredLogIndices = new HashSet<int>();
- 
+
     public int lossCost = 0;
     public int delayCost = 0;
     public int moveCost = 0;
@@ -22,13 +22,6 @@ public class ShipRuntime : MonoBehaviour
 
     void Awake()
     {
-    //    if (currentVisualizer == null)
-    //    {
-    //        if (CompareTag("RL_Waypoint"))
-    //            currentVisualizer = GameObject.Find("RL_QuayVisualizer").GetComponent<QuayVisualizer>();
-    //        else if (CompareTag("SPT_Waypoint"))
-    //            currentVisualizer = GameObject.Find("SPT_QuayVisualizer").GetComponent<QuayVisualizer>();
-    //    }
         if (quayScoreDB == null)
         {
             quayScoreDB = Resources.Load<QuayData>("QuayData");
@@ -42,7 +35,7 @@ public class ShipRuntime : MonoBehaviour
         moveCount++;
     }
 
-   //Call this regularly (e.g., Update or when sim time changes)
+    //Call this regularly (e.g., Update or when sim time changes)
     public void UpdateCosts(int currentSimDay)
     {
         CalculateLossCost(currentSimDay);
@@ -53,7 +46,7 @@ public class ShipRuntime : MonoBehaviour
 
     public void StartFrom(int simTime)
     {
-        controller = GetComponent<AIController>();
+        controller = GetComponent<SPT_Controller>();
         Debug.Log($"{Data?.Ship_Name} ({Data?.Ship_Index}) initialized. Logs: {Logs.Count}");
 
         for (int i = 0; i < Logs.Count; i++)
@@ -71,7 +64,7 @@ public class ShipRuntime : MonoBehaviour
 
     void Update()
     {
-        if(Logs == null || Logs.Count == 0) return;
+        if (Logs == null || Logs.Count == 0) return;
 
         int currentSimTime = SimulationClock.Instance.simulationTime;
 
@@ -80,11 +73,11 @@ public class ShipRuntime : MonoBehaviour
             var log = Logs[i];
             if (log.Time <= currentSimTime && !triggeredLogIndices.Contains(i))
             {
-//                Debug.Log($"Checking log location (len={log.Location?.Length}): '{log.Location}'");
+                //                Debug.Log($"Checking log location (len={log.Location?.Length}): '{log.Location}'");
 
                 if (string.IsNullOrWhiteSpace(log.Location) || log.Location.Trim().Length == 0)
                 {
-//                    Debug.LogWarning($"Skipped empty or whitespace-only location at log index {i}");
+                    //                    Debug.LogWarning($"Skipped empty or whitespace-only location at log index {i}");
                     triggeredLogIndices.Add(i);  // <--- Mark as triggered here
                     continue;
                 }
@@ -100,7 +93,7 @@ public class ShipRuntime : MonoBehaviour
         CalculateDelayCost(currentSimTime);
         CalculateMoveCost();
 
-        }
+    }
 
     private void CalculateLossCost(int currentSimDay)
     {
@@ -119,21 +112,21 @@ public class ShipRuntime : MonoBehaviour
             return;
         }
 
-        AIController ai = GetComponent<AIController>();
+        SPT_Controller ai = GetComponent<SPT_Controller>();
         if (ai == null)
         {
-            Debug.LogWarning("AIController not found on ship.");
+            Debug.LogWarning("Controller not found on ship.");
             return;
         }
 
         string currentQuay = ai.currentTarget;  // Where the ship currently is
 
-        if (string.IsNullOrWhiteSpace(currentQuay))
+        if (string.IsNullOrWhiteSpace(currentQuay) || currentQuay.Equals("S", StringComparison.OrdinalIgnoreCase))
         {
             // Ship not currently at any quay
             return;
         }
-    
+
         // Find operation active now based on simulation time
         int simTime = SimulationClock.Instance.simulationTime;
         int currentOpIndex = -1;
@@ -164,7 +157,7 @@ public class ShipRuntime : MonoBehaviour
         int quayIndex = quayScoreDB.quayWallNames.FindIndex(q => q.Trim().Equals(currentQuay.Trim(), StringComparison.OrdinalIgnoreCase));
         if (quayIndex < 0 || quayIndex >= operationEntry.quayScores.Count)
         {
-            //Debug.LogWarning($"Quay '{currentQuay}' not found or invalid index.");
+            Debug.LogWarning($"Quay '{currentQuay}' not found or invalid index.");
             return;
         }
 
@@ -198,5 +191,4 @@ public class ShipRuntime : MonoBehaviour
     {
         moveCost = moveCount * 30000;
     }
-
 }

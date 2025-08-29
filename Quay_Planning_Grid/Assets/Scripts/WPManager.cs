@@ -7,7 +7,7 @@ public class WPManager : MonoBehaviour
 {
     public static WPManager Instance;
     public Dictionary<string, GameObject> waypoints = new();
-    public Dictionary<string, WaypointScriptableObject> waypointData = new();
+    //public Dictionary<string, WaypointScriptableObject> waypointData = new();
 
     public GameObject GetWaypointByName(string name)
     {
@@ -27,14 +27,14 @@ public class WPManager : MonoBehaviour
         waypoints.TryGetValue(name.Trim(), out GameObject wp);
         return wp;
     }
-    public WaypointScriptableObject GetWaypointSO(string name)
-    {
-        name = name.Trim();
-        if (waypointData.TryGetValue(name, out var so)) return so;
+    //public WaypointScriptableObject GetWaypointSO(string name)
+    //{
+    //    name = name.Trim();
+    //    if (waypointData.TryGetValue(name, out var so)) return so;
 
-        Debug.LogWarning($"WPManager: No WaypointScriptableObject found for '{name}'");
-        return null;
-    }
+    //    Debug.LogWarning($"WPManager: No WaypointScriptableObject found for '{name}'");
+    //    return null;
+    //}
 
     private void Awake()
     {
@@ -48,13 +48,13 @@ public class WPManager : MonoBehaviour
                 waypoints.Add(cleanName, wp);
         }
 
-        WaypointScriptableObject[] foundSOs = Resources.LoadAll<WaypointScriptableObject>("Waypoints");
-        foreach (var so in foundSOs)
-        {
-            string cleanName = so.waypointName.Trim();
-            if (!waypointData.ContainsKey(cleanName))
-                waypointData.Add(cleanName, so);
-        }
+        //WaypointScriptableObject[] foundSOs = Resources.LoadAll<WaypointScriptableObject>("Waypoints");
+        //foreach (var so in foundSOs)
+        //{
+        //    string cleanName = so.waypointName.Trim();
+        //    if (!waypointData.ContainsKey(cleanName))
+        //        waypointData.Add(cleanName, so);
+        //}
 
         Debug.Log($"WPManager: Registered {waypoints.Count} waypoints.");
     }

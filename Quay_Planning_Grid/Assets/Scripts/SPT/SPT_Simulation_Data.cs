@@ -5,9 +5,9 @@ using UnityEngine;
 using UnityEditor;
 using System;
 
-public class RL_Simulation_Data : MonoBehaviour
+public class SPT_Simulation_Data : MonoBehaviour
 {
-    public static RL_Simulation_Data Instance;
+    public static SPT_Simulation_Data Instance;
 
     public List<SimulationData> alllogs = new List<SimulationData>();
 

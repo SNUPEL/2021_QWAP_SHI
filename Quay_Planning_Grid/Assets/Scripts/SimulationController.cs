@@ -41,7 +41,7 @@ public class SimulationController : MonoBehaviour
         ShipBuilder.Instance?.ResetBuilder();
 
         // 4. Reset other managers like ScheduleManager if needed
-        var scheduleData = ScheduleManager.Instance?.CurrentSimulation;
+        //var scheduleData = ScheduleManager.Instance?.CurrentSimulation;
 
         // 5. Reset the quay visualizer
         var quayVis = FindObjectOfType<QuayVisualizer>();
@@ -92,7 +92,9 @@ public class SimulationController : MonoBehaviour
 
         // Manually force Day 0 ship check
         ShipBuilder.Instance?.HandleTimeChanged(0);
-
+        SPT_Builder.Instance?.HandleTimeChanged(0);
+        //ShipBuilder.Instance?.InitializeBuilder();
+        //SPT_Builder.Instance?.InitializeBuilder();
     }
 
     public void PauseSimulation()

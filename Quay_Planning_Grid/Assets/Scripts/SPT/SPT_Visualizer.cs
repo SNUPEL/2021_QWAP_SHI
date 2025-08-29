@@ -1,10 +1,11 @@
-using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 using System;
 
-public class QuayVisualizer : MonoBehaviour
+public class SPT_Visualizer : MonoBehaviour
 {
-    public static QuayVisualizer Instance { get; private set; }
+    public static SPT_Visualizer Instance { get; private set; }
 
     public QuayData quayScoreDB;
     public GradeMaterialMap materialMap;
@@ -251,12 +252,12 @@ public class QuayVisualizer : MonoBehaviour
 
         return null;
     }
-
+ 
 #if UNITY_EDITOR
-    [ContextMenu("Auto-Fill RL_Waypoint Renderers")]
-    private void AutoFillRLRenderers()
+    [ContextMenu("Auto-Fill SPT_Waypoint Renderers")]
+    private void AutoFillSPTRenderers()
     {
-        AutoFillRenderersByTag("RL_Waypoint");
+        AutoFillRenderersByTag("SPT_Waypoint");
     }
 
     private void AutoFillRenderersByTag(string tagToUse)
@@ -289,5 +290,4 @@ public class QuayVisualizer : MonoBehaviour
         Debug.Log($"Auto-filled {quayWallRenderers.Count} renderers for tag '{tagToUse}'.");
     }
 #endif
-
 }

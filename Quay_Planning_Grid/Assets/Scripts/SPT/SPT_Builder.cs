@@ -2,11 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using System;
 
-public class ShipBuilder : MonoBehaviour
+public class SPT_Builder : MonoBehaviour
 {
-    public static ShipBuilder Instance { get; private set; }
+    public static SPT_Builder Instance { get; private set; }
 
     public GameObject shipPrefab; // assign in inspector
     private Simulation_Data simData;
@@ -15,6 +14,7 @@ public class ShipBuilder : MonoBehaviour
     private List<ShipData> pendingShips = new List<ShipData>();
     private List<GameObject> activeShips = new List<GameObject>();
     public IReadOnlyList<GameObject> ActiveShips => activeShips.AsReadOnly();
+    QuayVisualizer currentVisualizer;
 
     private int shipsToSpawn = 80; // limit for testing
 
@@ -22,6 +22,14 @@ public class ShipBuilder : MonoBehaviour
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
+
+        if (currentVisualizer == null)
+        {
+            if (CompareTag("RL_Waypoint"))
+                currentVisualizer = GameObject.Find("RL_QuayVisualizer").GetComponent<QuayVisualizer>();
+            else if (CompareTag("SPT_Waypoint"))
+                currentVisualizer = GameObject.Find("SPT_QuayVisualizer").GetComponent<QuayVisualizer>();
+        }
     }
 
     private void Start()
@@ -35,7 +43,6 @@ public class ShipBuilder : MonoBehaviour
     public void InitializeBuilder()
     {
         simData = FindObjectOfType<Simulation_Data>();
-
         LoadAndSortShips();
         shipsToSpawn = 80;
         if (SimulationClock.Instance != null)
@@ -64,7 +71,7 @@ public class ShipBuilder : MonoBehaviour
     void SpawnShip(ShipData shipData)
     {
         // Get Source waypoint position from your WPManager singleton
-        GameObject sourceWP = WPManager.Instance.GetWaypoint("Source");
+        GameObject sourceWP = SPTWP_Manager.Instance.GetWaypoint("Source");
         if (sourceWP == null)
         {
             Debug.LogError("Source waypoint not found!");
@@ -81,13 +88,13 @@ public class ShipBuilder : MonoBehaviour
         newShip.name = $"Ship_{shipData.Ship_Name}";
 
         // Get or add ShipRuntime component and assign data + logs
-        ShipRuntime runtime = newShip.GetComponent<ShipRuntime>();
+        SPT_ShipRuntime runtime = newShip.GetComponent<SPT_ShipRuntime>();
         if (runtime == null)
         {
-            runtime = newShip.AddComponent<ShipRuntime>();
+            runtime = newShip.AddComponent<SPT_ShipRuntime>();
         }
+
         runtime.Data = shipData;
-        
         if (simData != null)
         {
             string normalizedShipName = shipData.Ship_Name.Trim().ToUpperInvariant();
@@ -110,7 +117,7 @@ public class ShipBuilder : MonoBehaviour
 
     public void ResetBuilder()
     {
-       // Debug.LogWarning("[ShipBuilder] Resetting and clearing ships.");
+        // Debug.LogWarning("[ShipBuilder] Resetting and clearing ships.");
 
         foreach (var ship in activeShips)
         {
@@ -125,5 +132,4 @@ public class ShipBuilder : MonoBehaviour
 
         shipsToSpawn = 80;
     }
-
 }

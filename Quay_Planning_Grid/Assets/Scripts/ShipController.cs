@@ -8,6 +8,7 @@ public class ShipController : MonoBehaviour
     public SimulationClock simulationClock; // assign in inspector or find in Start
     public QuayInfoPanel infoPanel_1;
     public QuayVisualizer currentVisualizer; // reference to highlight based on ship
+
     public int currentSimDay; // update this from your SimulationClock
 
     //public QuayInfoPanel quayInfoPanel; // assign via Inspector
