@@ -47,7 +47,10 @@ public class SimulationController : MonoBehaviour
         var quayVis = FindObjectOfType<QuayVisualizer>();
         if (quayVis != null)
             quayVis.ResetVisualizer();
-
+            
+        var sptVis = FindObjectOfType<SPT_Visualizer>();
+        if (sptVis != null)
+            sptVis.ResetVisualizer();
         // 5. Reset UI/log panels if needed
         //DebugLogUI.Instance?.Clear();
         if (shipPanel != null) shipPanel.SetActive(false);

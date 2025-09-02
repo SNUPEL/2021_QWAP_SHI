@@ -1,11 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 using System;
 
-public class SPT_Visualizer : MonoBehaviour
+public class QuayVisualizer : MonoBehaviour
 {
-    public static SPT_Visualizer Instance { get; private set; }
+    public static QuayVisualizer Instance { get; private set; }
 
     public QuayData quayScoreDB;
     public GradeMaterialMap materialMap;
@@ -52,14 +51,14 @@ public class SPT_Visualizer : MonoBehaviour
         // Refresh info panel if it is showing this quay
         if (QuayInfoPanel.Instance != null && QuayInfoPanel.Instance.CurrentQuayIndex == quayIndex)
         {
-            //ShipRuntime ship = engaged ? FindShipAtQuay(quayScoreDB.quayWallNames[quayIndex]) : null;
-            SPT_ShipRuntime sship = engaged ? FindSShipAtQuay(quayScoreDB.quayWallNames[quayIndex]) : null;
-
-            /* QuayInfoPanel.Instance.UpdateQuayWallInfo(
+            ShipRuntime ship = engaged ? FindShipAtQuay(quayScoreDB.quayWallNames[quayIndex]) : null;
+            //SPT_ShipRuntime sship = engaged ? FindSShipAtQuay(quayScoreDB.quayWallNames[quayIndex]) : null;
+/* 
+            QuayInfoPanel.Instance.UpdateQuayWallInfo(
                 quayScoreDB.quayWallNames[quayIndex],
-                sship,
-                SimulationClock.Instance.simulationTime */
-            //);
+                ship,
+                SimulationClock.Instance.simulationTime
+            ); */
         }
     }
 
@@ -174,7 +173,7 @@ public class SPT_Visualizer : MonoBehaviour
             renderer.material = defaultMat;
         }
     }
-   /*  public ShipRuntime FindShipAtQuay(string quayName)
+    public ShipRuntime FindShipAtQuay(string quayName)
     {
         if (string.IsNullOrWhiteSpace(quayName))
         {
@@ -212,8 +211,8 @@ public class SPT_Visualizer : MonoBehaviour
         }
 
         return null;
-    } */
-    public SPT_ShipRuntime FindSShipAtQuay(string quayName)
+    }
+    /* public SPT_ShipRuntime FindSShipAtQuay(string quayName)
     {
         if (string.IsNullOrWhiteSpace(quayName))
         {
@@ -251,13 +250,13 @@ public class SPT_Visualizer : MonoBehaviour
         }
 
         return null;
-    }
- 
+    } */
+
 #if UNITY_EDITOR
-    [ContextMenu("Auto-Fill SPT_Waypoint Renderers")]
-    private void AutoFillSPTRenderers()
+    [ContextMenu("Auto-Fill RL_Waypoint Renderers")]
+    private void AutoFillRLRenderers()
     {
-        AutoFillRenderersByTag("SPT_Waypoint");
+        AutoFillRenderersByTag("RL_Waypoint");
     }
 
     private void AutoFillRenderersByTag(string tagToUse)
@@ -290,4 +289,5 @@ public class SPT_Visualizer : MonoBehaviour
         Debug.Log($"Auto-filled {quayWallRenderers.Count} renderers for tag '{tagToUse}'.");
     }
 #endif
+
 }

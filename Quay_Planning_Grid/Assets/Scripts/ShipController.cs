@@ -22,27 +22,6 @@ public class ShipController : MonoBehaviour
 
     void Update()
     {
-        //if (simulationClock != null)
-        //    currentSimDay = simulationClock.simulationTime;
-
-        //if (Input.GetMouseButtonDown(0)) // Left-click
-        //{
-        //    Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        //    if (Physics.Raycast(ray, out RaycastHit hit))
-        //    {
-        //        var ship = hit.collider.GetComponent<ShipRuntime>();
-        //        if (ship != null)
-        //        {
-        //            OnShipSelected(ship);
-        //        }
-        //        GameObject clickedObj = hit.collider.gameObject;
-        //        if (clickedObj.CompareTag("RL_Waypoint"))
-        //        {
-        //            OnQuayWallSelected(clickedObj);
-        //            return;
-        //        }
-        //    }
-        //}
         if (simulationClock != null)
             currentSimDay = simulationClock.simulationTime;
 
@@ -76,8 +55,6 @@ public class ShipController : MonoBehaviour
             }
         }
     }
-
-
     void OnShipSelected(ShipRuntime selectedShip)
     {
         Debug.Log("Selected ship: " + selectedShip.name);
@@ -129,34 +106,6 @@ public class ShipController : MonoBehaviour
         if (infoPanelObject != null)
             infoPanelObject.SetActive(false);
     }
-   
-
-    //ShipRuntime FindShipAtQuay(string quayName)
-    //{
-    //    ShipRuntime[] ships = FindObjectsOfType<ShipRuntime>();
-
-    //    foreach (var ship in ships)
-    //    {
-    //        // Find the latest log entry up to currentSimDay
-    //        SimulationData latestLog = null;
-    //        foreach (var log in ship.Logs)
-    //        {
-    //            if (log.Time <= currentSimDay)
-    //            {
-    //                if (latestLog == null || log.Time > latestLog.Time)
-    //                    latestLog = log;
-    //            }
-    //        }
-
-    //        // If latest log exists and location matches quayName, return this ship
-    //        if (latestLog != null && latestLog.Location == quayName)
-    //        {
-    //            return ship;
-    //        }
-    //    }
-
-    //    return null;
-    //}
     void ClearUIAndVisualizer()
     {
         Debug.Log("Clicked outside of ship or quay — clearing visuals and UI.");

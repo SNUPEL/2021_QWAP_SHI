@@ -4,58 +4,61 @@ using UnityEngine;
 using UnityEngine.AI;
 using System;
 
-public class SPT_Controller : MonoBehaviour
+
+public class AIController : MonoBehaviour
 {
-    public static SPT_Controller Instance { get; private set; }
+    public static AIController Instance { get; private set; }
     //public int currIndex { get; private set; } = -1;  // -1 means not on any quay
     private int moveCount = 0;
 
     public string currentTarget = "";
     private string previousTarget = "";
 
-    //private QuayVisualizer quayVisualizer;  // drag & drop in Inspector
-    [SerializeField] private SPT_Visualizer sptVisualizer; // drag your SPT visualizer here
+    [SerializeField] private QuayVisualizer quayVisualizer;  // drag & drop in Inspector
 
-    private Transform gridOrigin1;     // Set this in Inspector near Sink
+    private Transform gridOrigin;     // Set this in Inspector near Sink
     public int gridRows = 8;
     public int gridCols = 10;
     public float gridSpacing = 1.0f;
 
     public SimulationClock simulationClock; // assign in inspector or find in Start
-    [SerializeField] private float shipSize = 2.5f;
+    [SerializeField] private float shipSize = 2.5f;  
     [SerializeField] private float gap = 0.05f;       // extra space between ships
 
     private static int deliveredCount = 0; // shared across all ships
     private bool hasBeenDelivered = false; // prevent multiple triggers
     public static int DeliveredCount => deliveredCount;
     public static int maxdelivery = 80;
-    private SPT_ShipRuntime shipRuntime;
+    private ShipRuntime shipRuntime;
 
     private void Awake()
     {
-        sptVisualizer = SPT_Visualizer.Instance;
-        if (sptVisualizer == null)
+        quayVisualizer = QuayVisualizer.Instance;
+        if (quayVisualizer == null)
         {
             Debug.LogError("QuayVisualizer.Instance is null! Make sure QuayVisualizer exists in the scene before ships are spawned.");
         }
 
+        // Fill only SPT walls
+        //quayVisualizer.AutoFillRenderers("RL_Waypoint");
+
         Transform sinkTransform = null;
 
-        if (SPTWP_Manager.Instance != null)
+        if (WPManager.Instance != null)
         {
-            sinkTransform = SPTWP_Manager.Instance.GetWaypointByName("Sink")?.transform;
+            sinkTransform = WPManager.Instance.GetWaypointByName("Sink")?.transform;
         }
 
         if (sinkTransform != null)
         {
-            gridOrigin1 = sinkTransform;
+            gridOrigin = sinkTransform;
         }
         else
         {
             Debug.LogWarning("SPT Sink not found!");
         }
 
-        shipRuntime = GetComponent<SPT_ShipRuntime>();
+        shipRuntime = GetComponent<ShipRuntime>();
 
     }
     public void MoveTo(string locationName)
@@ -72,7 +75,7 @@ public class SPT_Controller : MonoBehaviour
             // Already at this location, no need to move
             return;
         }
-        var target = SPTWP_Manager.Instance.GetWaypoint(trimmedLocation);
+        var target = WPManager.Instance.GetWaypoint(trimmedLocation);
         if (target == null)
         {
             Debug.LogWarning($"{gameObject.name}: No waypoint found named '{trimmedLocation}'");
@@ -89,22 +92,23 @@ public class SPT_Controller : MonoBehaviour
         {
             shipRuntime.IncrementMoveCount();
         }
+       
 
         // If we were on a quay and are leaving it (oldTarget != currentTarget), free the old quay
 
         if (!string.IsNullOrWhiteSpace(oldTarget) && !oldTarget.Equals("Source", StringComparison.OrdinalIgnoreCase) && QuayInfoPanel.Instance != null)
         {
-            sptVisualizer.SetQuayEngagement(oldTarget, false);
-            QuayInfoPanel.Instance?.NotifyShipChanges(oldTarget, null);
+            quayVisualizer.SetQuayEngagement(oldTarget, false);
+            QuayInfoPanel.Instance?.NotifyShipChange(oldTarget, null);
 
         }
 
         if (IsQuayWall(currentTarget) && QuayInfoPanel.Instance != null)
         {
-            sptVisualizer.SetQuayEngagement(currentTarget, true);
-            SPT_ShipRuntime sship = GetComponent<SPT_ShipRuntime>();
-            QuayInfoPanel.Instance?.NotifyShipChanges(currentTarget, sship);
-
+            quayVisualizer.SetQuayEngagement(currentTarget, true);
+            ShipRuntime ship = GetComponent<ShipRuntime>();
+            QuayInfoPanel.Instance?.NotifyShipChange(currentTarget, ship);
+   
         }
         // Teleport/move to the waypoint
         transform.position = target.transform.position;
@@ -118,7 +122,7 @@ public class SPT_Controller : MonoBehaviour
             //    if (prevIdx >= 0)
             //        quayVisualizer.SetQuayEngagement(prevIdx, false);
             //}
-            sptVisualizer.SetQuayEngagement(oldTarget, false);
+            quayVisualizer.SetQuayEngagement(oldTarget, false);
 
             MoveShipToGrid();
             hasBeenDelivered = true;
@@ -129,14 +133,17 @@ public class SPT_Controller : MonoBehaviour
     }
     bool IsQuayWall(string locationName)
     {
-        if (string.IsNullOrEmpty(locationName)) return false;
+        if (quayVisualizer == null)
+        {
+            Debug.LogWarning($"{gameObject.name}: quayVisualizer is null!");
+            return false;
+        }
 
-        // Check if this location name exists in your quayWallNames list
-        return sptVisualizer != null && sptVisualizer.quayScoreDB.quayWallNames.Contains(locationName);
+        return quayVisualizer.quayScoreDB.quayWallNames.Contains(locationName);
     }
     void MoveShipToGrid()
     {
-        if (gridOrigin1 == null)
+        if (gridOrigin == null)
         {
             Debug.LogError("Grid origin not set! Can't position delivered ship.");
             return;
@@ -148,10 +155,10 @@ public class SPT_Controller : MonoBehaviour
         int col = deliveredCount % gridCols;
 
         // Offset in local orientation
-        Vector3 offset = (gridOrigin1.right * col * spacing) +
-                         (gridOrigin1.forward * row * spacing);
+        Vector3 offset = (gridOrigin.right * col * spacing) +
+                            (gridOrigin.forward * row * spacing);
 
-        transform.position = gridOrigin1.position + offset;
+        transform.position = gridOrigin.position + offset;
 
         deliveredCount++;
 
@@ -176,4 +183,5 @@ public class SPT_Controller : MonoBehaviour
         deliveredCount = 0;
 
     }
+    
 }
