@@ -5,9 +5,9 @@ public class ShipInfoPanel : MonoBehaviour
 {
     public TMP_Text shipIdText;
     public TMP_Text shipTypeText;
-    public TMP_Text prevOperationText;
+    //public TMP_Text prevOperationText;
     public TMP_Text currentOperationText;
-    public TMP_Text nextOperationText;
+    //public TMP_Text nextOperationText;
     public TMP_Text percentCompleteText;
     public TMP_Text daysToCompletionText;
     public TMP_Text lossCostText;
@@ -31,15 +31,15 @@ public class ShipInfoPanel : MonoBehaviour
         int currentIndex = GetCurrentOperationIndex(selectedShip, currentSimDay);
 
         // Previous operation or "-"
-        prevOperationText.text = "Previous Operation: " + (currentIndex > 0 ? FormatOperation(selectedShip, currentIndex - 1): "-");
+        //prevOperationText.text = "Previous Operation: " + (currentIndex > 0 ? FormatOperation(selectedShip, currentIndex - 1): "-");
 
         // Current operation or "-"
         currentOperationText.text = "Current Operation:" + (FormatOperation(selectedShip, currentIndex));
 
         // Next operation or "-"
-        nextOperationText.text = "Next Operation" +((currentIndex >= 0 && currentIndex < selectedShip.Data.Operation_Name.Count - 1)
-            ? FormatOperation(selectedShip, currentIndex + 1)
-            : "-");
+        //nextOperationText.text = "Next Operation" +((currentIndex >= 0 && currentIndex < selectedShip.Data.Operation_Name.Count - 1)
+        //    ? FormatOperation(selectedShip, currentIndex + 1)
+        //    : "-");
     }
 
     private int GetCurrentOperationIndex(ShipRuntime ship, int currentSimDay)
@@ -97,7 +97,7 @@ public class ShipInfoPanel : MonoBehaviour
         int totalDuration = deliveryDate - launchDate;
         int daysPassed = Mathf.Clamp(simDay - launchDate, 0, totalDuration);
         float percentComplete = totalDuration > 0 ? (daysPassed / (float)totalDuration) * 100f : 0f;
-        percentCompleteText.text = $"Completion: {percentComplete:F1}%";
+        percentCompleteText.text = $"% of work completion: {percentComplete:F1}%";
 
         // Days to completion
         int daysLeft = Mathf.Max(deliveryDate - simDay, 0);
