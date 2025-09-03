@@ -18,10 +18,10 @@ public class SimulationClock : MonoBehaviour
     public event TimeChanged OnTimeChanged;
     public bool simulationStarted = false; // Add this
 
-    //Day 0 → Time = 0s
-    //Day 1 → Time = 0.5s
-    //Day 2 → Time = 1.0s
-    //Day 10 → Time = 5.0s
+    //Day 0 ??Time = 0s
+    //Day 1 ??Time = 0.5s
+    //Day 2 ??Time = 1.0s
+    //Day 10 ??Time = 5.0s
     void Start()
     {
         _startTime = 0;
@@ -34,7 +34,7 @@ public class SimulationClock : MonoBehaviour
     }
 
     // (Time.time - (Time.time - 1.0f)) = 1.0f
-    // 1.0 / 0.5 = 2.0 → FloorToInt → 2
+    // 1.0 / 0.5 = 2.0 ??FloorToInt ??2
 
     void Update()
     {
