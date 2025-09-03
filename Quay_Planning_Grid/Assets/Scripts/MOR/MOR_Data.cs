@@ -5,9 +5,9 @@ using UnityEngine;
 using UnityEditor;
 using System;
 
-public class Simulation_Data : MonoBehaviour
+public class MOR_Data : MonoBehaviour
 {
-    public static Simulation_Data Instance;
+    public static MOR_Data Instance;
 
     public List<SimulationData> alllogs = new List<SimulationData>();
 
@@ -67,7 +67,7 @@ public class Simulation_Data : MonoBehaviour
         foreach (var log in alllogs)
         {
             string logID = NormalizeShipID(log.Ship_Index);
-//            Debug.Log($"Comparing log.Ship_Index = {log.Ship_Index} → {logID}");
+            //            Debug.Log($"Comparing log.Ship_Index = {log.Ship_Index} → {logID}");
             if (logID == normalizedIndex)
             {
                 matching.Add(log);

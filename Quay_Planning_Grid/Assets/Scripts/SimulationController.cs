@@ -39,6 +39,9 @@ public class SimulationController : MonoBehaviour
 
         // 3. Reset the ShipBuilder (if it tracks state or queues)
         ShipBuilder.Instance?.ResetBuilder();
+        SPT_Builder.Instance?.ResetBuilder();
+        MOR_Builder.Instance?.ResetBuilder();
+        MWKR_Builder.Instance?.ResetBuilder();
 
         // 4. Reset other managers like ScheduleManager if needed
         //var scheduleData = ScheduleManager.Instance?.CurrentSimulation;
@@ -51,6 +54,15 @@ public class SimulationController : MonoBehaviour
         var sptVis = FindObjectOfType<SPT_Visualizer>();
         if (sptVis != null)
             sptVis.ResetVisualizer();
+
+        var morVis = FindObjectOfType<MOR_Visualizer>();
+        if (morVis != null)
+            morVis.ResetVisualizer();
+
+        var mwkrVis = FindObjectOfType<MWKR_Visualizer>();
+        if (mwkrVis != null)
+            mwkrVis.ResetVisualizer();
+
         // 5. Reset UI/log panels if needed
         //DebugLogUI.Instance?.Clear();
         if (shipPanel != null) shipPanel.SetActive(false);
@@ -94,10 +106,12 @@ public class SimulationController : MonoBehaviour
         SimulationClock.Instance.simulationStarted = true;
 
         // Manually force Day 0 ship check
-        ShipBuilder.Instance?.HandleTimeChanged(0);
-        SPT_Builder.Instance?.HandleTimeChanged(0);
-        //ShipBuilder.Instance?.InitializeBuilder();
-        //SPT_Builder.Instance?.InitializeBuilder();
+        //ShipBuilder.Instance?.HandleTimeChanged(0);
+        //SPT_Builder.Instance?.HandleTimeChanged(0);
+        ShipBuilder.Instance?.InitializeBuilder();
+        SPT_Builder.Instance?.InitializeBuilder();
+        MOR_Builder.Instance?.InitializeBuilder();
+        MWKR_Builder.Instance?.InitializeBuilder();
     }
 
     public void PauseSimulation()

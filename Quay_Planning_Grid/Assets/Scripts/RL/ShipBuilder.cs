@@ -35,6 +35,7 @@ public class ShipBuilder : MonoBehaviour
     public void InitializeBuilder()
     {
         simData = FindObjectOfType<Simulation_Data>();
+        simData.LoadSimulationLogs("log-RL.csv");
 
         LoadAndSortShips();
         shipsToSpawn = 80;
@@ -79,6 +80,7 @@ public class ShipBuilder : MonoBehaviour
         // Instantiate ship at spawnPos without NavMesh or movement
         GameObject newShip = Instantiate(shipPrefab, basePos, Quaternion.identity);
         newShip.name = $"Ship_{shipData.Ship_Name}";
+
 
         // Get or add ShipRuntime component and assign data + logs
         ShipRuntime runtime = newShip.GetComponent<ShipRuntime>();

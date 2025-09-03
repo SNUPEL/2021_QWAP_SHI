@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 using System;
 
 public class SPT_Controller : MonoBehaviour
@@ -112,12 +111,7 @@ public class SPT_Controller : MonoBehaviour
         // If going to Sink, free previous quay (if any), then deliver
         if (currentTarget.Equals("Sink", System.StringComparison.OrdinalIgnoreCase) && !hasBeenDelivered)
         {
-            //if (!string.IsNullOrEmpty(oldTarget) && IsQuayWall(oldTarget))
-            //{
-            //    int prevIdx = quayVisualizer.quayScoreDB.quayWallNames.IndexOf(oldTarget);
-            //    if (prevIdx >= 0)
-            //        quayVisualizer.SetQuayEngagement(prevIdx, false);
-            //}
+            
             sptVisualizer.SetQuayEngagement(oldTarget, false);
 
             MoveShipToGrid();

@@ -88,12 +88,6 @@ public class ShipController : MonoBehaviour
         Debug.Log("Clicked quay wall: " + quayName);
         quayInfoPanelObject.SetActive(true);
 
-        //int quayIndex = quayScoreDB.quayWallNames.IndexOf(quayName);
-        //if (quayIndex < 0)
-        //{
-        //    Debug.LogWarning($"Quay name '{quayName}' not found in quayWallNames list.");
-        //    return;
-        //}
         ShipRuntime foundShip = currentVisualizer.FindShipAtQuay(quayName);
 
         if (infoPanel_1 != null)

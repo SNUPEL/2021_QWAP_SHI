@@ -5,8 +5,8 @@ using TMPro;
 
 public class DashboardUI : MonoBehaviour
 {
-    public ScheduleManager scheduleManager;
-    public SPT_ScheduleManager SPTScheduleManager;
+    //public ScheduleManager scheduleManager;
+    //public SPT_ScheduleManager SPTScheduleManager;
     public TMP_Text algorithmNameText;
 
     [Header("Cameras")]
@@ -53,19 +53,29 @@ public class DashboardUI : MonoBehaviour
         SetActiveCamera(cam4);
         UpdateAlgorithmText("MWKR-MF");
     }
-
+    public void OnIsoButton()
+    {
+        if (activeCam == cam1) SetActiveCamera(icam1);
+        else if (activeCam == cam2) SetActiveCamera(icam2);
+        else if (activeCam == cam3) SetActiveCamera(icam3);
+        else if (activeCam == cam4) SetActiveCamera(icam4);
+        else
+            Debug.LogWarning("OnIsoButton: No matching perspective cam is active!");
+    }
+    public void OnTopButton()
+    {
+        if (activeCam == icam1) SetActiveCamera(cam1);
+        else if (activeCam == icam2) SetActiveCamera(cam2);
+        else if (activeCam == icam3) SetActiveCamera(cam3);
+        else if (activeCam == icam4) SetActiveCamera(cam4);
+        else
+            Debug.LogWarning("OnTopButton: No matching iso cam is active!");
+    }
     // Run simulation button
     public void OnRunSimulationClicked()
     {
         SimulationController.Instance?.ResetSimulation();
-        //scheduleManager.LoadAllSchedules();
-        scheduleManager.LoadSchedule("log-RL.csv");
-        scheduleManager.LoadSchedule("log-SPT-MF.csv");
-        //scheduleManager.LoadSchedule("log-MOR-MF.csv");
-        //scheduleManager.LoadSchedule("log-MWKR-MF.csv");
 
-        ShipBuilder.Instance?.InitializeBuilder();
-        SPT_Builder.Instance?.InitializeBuilder();
         SimulationController.Instance?.StartSimulation();
         
     }

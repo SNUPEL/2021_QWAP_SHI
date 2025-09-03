@@ -8,7 +8,7 @@ public class SPT_Builder : MonoBehaviour
     public static SPT_Builder Instance { get; private set; }
 
     public GameObject shipPrefab; // assign in inspector
-    private Simulation_Data simData;
+    private SPT_Data simData;
     public float delayBetweenSpawns = 0.5f;
 
     private List<ShipData> pendingShips = new List<ShipData>();
@@ -22,27 +22,27 @@ public class SPT_Builder : MonoBehaviour
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
-
-        if (currentVisualizer == null)
-        {
-            if (CompareTag("RL_Waypoint"))
-                currentVisualizer = GameObject.Find("RL_QuayVisualizer").GetComponent<QuayVisualizer>();
-            else if (CompareTag("SPT_Waypoint"))
-                currentVisualizer = GameObject.Find("SPT_QuayVisualizer").GetComponent<QuayVisualizer>();
-        }
     }
 
     private void Start()
     {
         Time.timeScale = 30.0f;
-        //simData = FindObjectOfType<Simulation_Data>();
-        //LoadAndSortShips();
-        //SimulationClock.Instance.OnTimeChanged += HandleTimeChanged;
-
+        
     }
     public void InitializeBuilder()
     {
-        simData = FindObjectOfType<Simulation_Data>();
+        if (simData == null)
+        {
+            simData = FindObjectOfType<SPT_Data>();
+        }
+
+        if (simData == null)
+        {
+            Debug.LogError("SPT_Builder: No SPT_Data found in the scene!");
+            return;
+        }
+        simData.LoadSimulationLogs("log-SPT-MF.csv");
+
         LoadAndSortShips();
         shipsToSpawn = 80;
         if (SimulationClock.Instance != null)
@@ -79,9 +79,6 @@ public class SPT_Builder : MonoBehaviour
         }
 
         Vector3 basePos = sourceWP.transform.position + new Vector3(0, 1.0f, 0);
-        // Add small random offset so ships don't overlap exactly
-        //Vector2 randomOffset = Random.insideUnitCircle * 2f;
-        //Vector3 spawnPos = basePos + new Vector3(randomOffset.x, 0, randomOffset.y);
 
         // Instantiate ship at spawnPos without NavMesh or movement
         GameObject newShip = Instantiate(shipPrefab, basePos, Quaternion.identity);
@@ -98,7 +95,7 @@ public class SPT_Builder : MonoBehaviour
         if (simData != null)
         {
             string normalizedShipName = shipData.Ship_Name.Trim().ToUpperInvariant();
-            Debug.Log("SimulationData.Instance = " + Simulation_Data.Instance);
+            Debug.Log("SimulationData.Instance = " + SPT_Data.Instance);
 
             runtime.Logs = simData.GetLogsForShips(shipData.Ship_Name);
             Debug.Log($"[{shipData.Ship_Name}] Assigned {runtime.Logs.Count} logs");

@@ -8,9 +8,7 @@ public class SPTWP_Manager : MonoBehaviour
 {
     public static SPTWP_Manager Instance;
 
-    //public static WPManager Instance;
     public Dictionary<string, GameObject> waypoints = new();
-    //public Dictionary<string, WaypointScriptableObject> waypointData = new();
 
     public GameObject GetWaypointByName(string name)
     {
@@ -30,15 +28,7 @@ public class SPTWP_Manager : MonoBehaviour
         waypoints.TryGetValue(name.Trim(), out GameObject wp);
         return wp;
     }
-    //public WaypointScriptableObject GetWaypointSO(string name)
-    //{
-    //    name = name.Trim();
-    //    if (waypointData.TryGetValue(name, out var so)) return so;
-
-    //    Debug.LogWarning($"WPManager: No WaypointScriptableObject found for '{name}'");
-    //    return null;
-    //}
-
+ 
     private void Awake()
     {
         Instance = this;
@@ -50,14 +40,6 @@ public class SPTWP_Manager : MonoBehaviour
             if (!waypoints.ContainsKey(cleanName))
                 waypoints.Add(cleanName, wp);
         }
-
-        //WaypointScriptableObject[] foundSOs = Resources.LoadAll<WaypointScriptableObject>("Waypoints");
-        //foreach (var so in foundSOs)
-        //{
-        //    string cleanName = so.waypointName.Trim();
-        //    if (!waypointData.ContainsKey(cleanName))
-        //        waypointData.Add(cleanName, so);
-        //}
 
         Debug.Log($"WPManager: Registered {waypoints.Count} waypoints.");
     }

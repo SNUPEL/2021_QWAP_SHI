@@ -5,9 +5,9 @@ using UnityEngine;
 using UnityEditor;
 using System;
 
-public class SPT_Simulation_Data : MonoBehaviour
+public class Simulation_Data : MonoBehaviour
 {
-    public static SPT_Simulation_Data Instance;
+    public static Simulation_Data Instance;
 
     public List<SimulationData> alllogs = new List<SimulationData>();
 
@@ -59,6 +59,29 @@ public class SPT_Simulation_Data : MonoBehaviour
 
     public List<SimulationData> GetLogsForShips(string shipIndex)
     {
-        return alllogs.FindAll(log => log.Ship_Index.Trim().Equals(shipIndex.Trim(), StringComparison.OrdinalIgnoreCase));
+        string normalizedIndex = NormalizeShipID(shipIndex);
+        Debug.Log($"Looking for logs matching: {normalizedIndex}");
+
+        List<SimulationData> matching = new List<SimulationData>();
+
+        foreach (var log in alllogs)
+        {
+            string logID = NormalizeShipID(log.Ship_Index);
+//            Debug.Log($"Comparing log.Ship_Index = {log.Ship_Index} → {logID}");
+            if (logID == normalizedIndex)
+            {
+                matching.Add(log);
+            }
+        }
+
+        return matching;
+
     }
+
+    private string NormalizeShipID(string id)
+    {
+        if (string.IsNullOrEmpty(id)) return "";
+        return id.Trim().ToUpperInvariant(); // Keep underscores if needed
+    }
+
 }

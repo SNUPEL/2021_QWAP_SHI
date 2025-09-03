@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3446757131186419103}
   - component: {fileID: 5362950765575323086}
   - component: {fileID: 2840743633718560247}
+  - component: {fileID: -8303879864842079476}
   m_Layer: 0
   m_Name: MOR Ship
   m_TagString: MOR_Waypoint
@@ -105,3 +106,23 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-8303879864842079476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6935602844075819783}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 663b3f8dfbc9741f5b6b32cb6b33936d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentTarget: 
+  morVisualizer: {fileID: 0}
+  gridRows: 8
+  gridCols: 10
+  gridSpacing: 1
+  simulationClock: {fileID: 0}
+  shipSize: 2.5
+  gap: 0.05

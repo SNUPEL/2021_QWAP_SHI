@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class SPT_ShipRuntime : MonoBehaviour
 {
@@ -18,7 +17,7 @@ public class SPT_ShipRuntime : MonoBehaviour
 
     private int moveCount = 0;
     public QuayData quayScoreDB; // assign in inspector or get reference somehow
-    QuayVisualizer currentVisualizer;
+    SPT_Visualizer currentVisualizer;
 
     void Awake()
     {
