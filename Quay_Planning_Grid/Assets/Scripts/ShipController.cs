@@ -2,22 +2,42 @@ using UnityEngine;
 
 public class ShipController : MonoBehaviour
 {
-    public Camera mainCamera; // Assign in Inspector (usually MainCamera)
+    //public Camera mainCamera; // Assign in Inspector (usually MainCamera)
     public ShipInfoPanel infoPanel; // Assign via Inspector
     public GameObject infoPanelObject; // This is the GameObject with ShipInfoPanel attached
+    public SPTInfoPanel sptinfoPanel; // Assign via Inspector
+    public GameObject sptinfoPanelObject; // This is the GameObject with ShipInfoPanel attached
+    public MORInfoPanel morinfoPanel; // Assign via Inspector
+    public GameObject morinfoPanelObject; // This is the GameObject with ShipInfoPanel attached
+    public MWKRInfoPanel mwkrinfoPanel; // Assign via Inspector
+    public GameObject mwkrinfoPanelObject; // This is the GameObject with ShipInfoPanel attached
+    public Camera cam1;
+    public Camera cam2;
+    public Camera cam3;
+    public Camera cam4;
+
+    private Camera activeCam; // default to cam1
     public SimulationClock simulationClock; // assign in inspector or find in Start
     public QuayInfoPanel infoPanel_1;
-    public QuayVisualizer currentVisualizer; // reference to highlight based on ship
+    //public QuayVisualizer currentVisualizer; // reference to highlight based on ship
 
     public int currentSimDay; // update this from your SimulationClock
 
     //public QuayInfoPanel quayInfoPanel; // assign via Inspector
     public GameObject quayInfoPanelObject; // the visible panel GO
+    public QuayVisualizer rlVisualizer;
+    public SPT_Visualizer sptVisualizer;
+    public MOR_Visualizer morVisualizer;
+    public MWKR_Visualizer mwkrVisualizer;
+    public bool highlightActive = false;
 
     void Start()
     {
         if (simulationClock == null)
             simulationClock = FindObjectOfType<SimulationClock>();
+
+        activeCam = cam1; // now it’s safe
+
     }
 
     void Update()
@@ -25,88 +45,306 @@ public class ShipController : MonoBehaviour
         if (simulationClock != null)
             currentSimDay = simulationClock.simulationTime;
 
-        if (Input.GetMouseButtonDown(0)) // Left-click
+        Camera activeCam = FindObjectOfType<DashboardUI>().ActiveCamera;
+        if (activeCam == null) return;
+
+        if (Input.GetMouseButtonDown(0))
         {
-            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+            Ray ray = activeCam.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
                 GameObject clickedObj = hit.collider.gameObject;
 
-                var ship = hit.collider.GetComponent<ShipRuntime>();
-                if (ship != null)
+                // Ship selection based on active camera + tag/component
+                if (activeCam == cam1 && clickedObj.CompareTag("RL_Ship"))
                 {
-                    OnShipSelected(ship);
-                    return;
+                    if (clickedObj.TryGetComponent(out ShipRuntime rlShip))
+                    {
+                        OnRShipSelected(rlShip);
+                    }
+                }
+                else if (activeCam == cam2 && clickedObj.CompareTag("SPT_Ship"))
+                {
+                    if (clickedObj.TryGetComponent(out SPT_ShipRuntime sptShip))
+                        OnSShipSelected(sptShip);
+                }
+                else if (activeCam == cam3 && clickedObj.CompareTag("MOR_Ship"))
+                {
+                    if (clickedObj.TryGetComponent(out MOR_Runtime morShip))
+                        OnMShipSelected(morShip);
+                }
+                else if (activeCam == cam4 && clickedObj.CompareTag("MWKR_Ship"))
+                {
+                    if (clickedObj.TryGetComponent(out MWKR_Runtime mwkrShip))
+                        OnWShipSelected(mwkrShip);
                 }
 
-                if (clickedObj.CompareTag("RL_Waypoint"))
+                // Quay selection based on tag (different for each sim)
+                else if (clickedObj.CompareTag("RL_Waypoint") || clickedObj.CompareTag("SPT_Waypoint") ||
+                            clickedObj.CompareTag("MOR_Waypoint") || clickedObj.CompareTag("MWKR_Waypoint"))
                 {
                     OnQuayWallSelected(clickedObj);
-                    return;
                 }
 
-                // Clicked something else - not a ship or quay
-                ClearUIAndVisualizer();
+                else
+                {
+                    ClearUIAndVisualizer(); // clicked something else
+                }
             }
             else
             {
-                // Clicked empty space
-                ClearUIAndVisualizer();
+                ClearUIAndVisualizer(); // clicked empty space
             }
         }
     }
-    void OnShipSelected(ShipRuntime selectedShip)
-    {
-        Debug.Log("Selected ship: " + selectedShip.name);
+    // if (simulationClock != null)
+    //     currentSimDay = simulationClock.simulationTime;
+    // Camera mainCamera = FindObjectOfType<DashboardUI>().ActiveCamera;
+    // if (mainCamera == null) return;
 
-        if (currentVisualizer != null && infoPanel != null)
+    // if (Input.GetMouseButtonDown(0))
+    // {
+    //     // if (activeCam == null)
+    //     // {
+    //     //     Debug.LogWarning("No active camera set for ShipController click handling.");
+    //     //     return;
+    //     // }
+
+    //     Ray ray = activeCam.ScreenPointToRay(Input.mousePosition);
+    //     if (Physics.Raycast(ray, out RaycastHit hit))
+    //     {
+    //         GameObject clickedObj = hit.collider.gameObject;
+
+    //         // RL simulation
+    //         if (activeCam == cam1 && hit.collider.TryGetComponent(out ShipRuntime rlShip))
+    //         {
+    //             OnShipSelected(rlShip);
+    //         }
+    //         // SPT simulation
+    //         else if (activeCam == cam2 && hit.collider.TryGetComponent(out SPT_ShipRuntime sptShip))
+    //         {
+    //             OnShipSelected(sptShip);
+    //         }
+    //         // MOR simulation
+    //         else if (activeCam == cam3 && hit.collider.TryGetComponent(out MOR_Runtime morShip))
+    //         {
+    //             OnShipSelected(morShip);
+    //         }
+    //         // MWKR simulation
+    //         else if (activeCam == cam4 && hit.collider.TryGetComponent(out MWKR_Runtime mwkrShip))
+    //         {
+    //             OnShipSelected(mwkrShip);
+    //         }
+    //         // Quay wall clicks (shared)
+    //         else if (clickedObj.CompareTag("RL_Waypoint") || clickedObj.CompareTag("SPT_Waypoint") ||
+    //                 clickedObj.CompareTag("MOR_Waypoint") || clickedObj.CompareTag("MWKR_Waypoint"))
+    //         {
+    //             OnQuayWallSelected(clickedObj);
+    //         }
+    //         else
+    //         {
+    //             ClearUIAndVisualizer(); // clicked something else
+    //         }
+    //     }
+    //     else
+    //     {
+    //         ClearUIAndVisualizer(); // clicked empty space
+    //     }
+    // }
+
+    // void OnShipSelected(GameObject shipObj)
+    // {
+    // if (shipObj.CompareTag("RL_Ship"))
+    //     {
+    //         var ship = shipObj.GetComponent<ShipRuntime>();
+    //         rlVisualizer.ResetGradesOnly();
+    //         string shipType = ship.Data.Ship_Type;
+    //         string operation = ship.Data.Operation_Type.Count > 0 ? ship.Data.Operation_Type[0] : null;
+    //         rlVisualizer.HighlightQuayGrades(shipType, operation);
+    //         infoPanelObject.gameObject.SetActive(true);
+    //         InfoPanel.UpdateShipInfo(ship, currentSimDay);
+    //     }
+    //     else if (shipObj.CompareTag("SPT_Ship"))
+    //     {
+    //         var ship = shipObj.GetComponent<SPT_ShipRuntime>();
+    //         sptVisualizer.ResetGradesOnly();
+    //         string shipType = ship.Data.Ship_Type;
+    //         string operation = ship.Data.Operation_Type.Count > 0 ? ship.Data.Operation_Type[0] : null;
+    //         sptVisualizer.HighlightQuayGrades(shipType, operation);
+    //         sptinfoPanelObject.gameObject.SetActive(true);
+    //         sptinfoPanel.UpdateShipInfo(ship, currentSimDay);
+    //     }
+    //     else if (shipObj.CompareTag("MOR_Ship"))
+    //     {
+    //         var ship = shipObj.GetComponent<MOR_Runtime>();
+    //         morVisualizer.ResetGradesOnly();
+    //         string shipType = ship.Data.Ship_Type;
+    //         string operation = ship.Data.Operation_Type.Count > 0 ? ship.Data.Operation_Type[0] : null;
+    //         morVisualizer.HighlightQuayGrades(shipType, operation);
+    //         morinfoPanelObject.gameObject.SetActive(true);
+    //         morinfoPanel.UpdateShipInfo(ship, currentSimDay);
+    //     }
+    //     else if (shipObj.CompareTag("MWKR_Ship"))
+    //     {
+    //         var ship = shipObj.GetComponent<MWKR_Runtime>();
+    //         mwkrVisualizer.ResetGradesOnly();
+    //         string shipType = ship.Data.Ship_Type;
+    //         string operation = ship.Data.Operation_Type.Count > 0 ? ship.Data.Operation_Type[0] : null;
+    //         mwkrVisualizer.HighlightQuayGrades(shipType, operation);
+    //         mwkrinfoPanelObject.gameObject.SetActive(true);
+    //         mwkrinfoPanel.UpdateShipInfo(ship, currentSimDay);
+    //     }
+
+    //     // Hide the quay info panel whenever a ship is clicked
+    //     if (quayInfoPanelObject != null)
+    //         quayInfoPanelObject.SetActive(false);
+    // }
+    
+
+
+    void OnSShipSelected(SPT_ShipRuntime selectedShip)
+    {
+        Debug.Log("Selected SPT ship: " + selectedShip.name);
+        // Disable other visualizers, enable this one
+       
+
+        if (sptVisualizer != null && sptinfoPanel != null)
         {
-            currentVisualizer.ResetGradesOnly();
+            sptVisualizer.ResetGradesOnly();
 
             string shipType = selectedShip.Data.Ship_Type;
-            string operation = selectedShip.Data.Operation_Name.Count > 0 ? selectedShip.Data.Operation_Type[0] : null;
+            string operation = selectedShip.Data.Operation_Type.Count > 0 ? selectedShip.Data.Operation_Type[0] : null;
 
-            currentVisualizer.HighlightQuayGrades(shipType, operation);
-            Debug.Log($"Calling HighlightQuayGrades with: {shipType}, {operation}");
+            sptVisualizer.HighlightQuayGrades(shipType, operation);
+            //sptVisualizer.ApplyVisualization();
+            sptinfoPanelObject.gameObject.SetActive(true);
+            sptinfoPanel.UpdateShipInfo(selectedShip, currentSimDay);
+        }
 
-            infoPanelObject.gameObject.SetActive(true);  // Make sure the panel is visible
-            infoPanel.UpdateShipInfo(selectedShip, currentSimDay);
-            Debug.Log($"Updating panel for ship {selectedShip.Data.Ship_Index}, current day = {currentSimDay}");
-        }
-        else
-        {
-            Debug.LogWarning("QuayVisualizer is not assigned.");
-        }
         if (quayInfoPanelObject != null)
             quayInfoPanelObject.SetActive(false);
     }
-    
+    void OnRShipSelected(ShipRuntime selectedShip)
+    {
+        Debug.Log("Selected RL ship: " + selectedShip.name);
+        // Disable other visualizers, enable this one
+        if (rlVisualizer != null && infoPanel != null)
+        {
+            rlVisualizer.ResetGradesOnly();
+
+            string shipType = selectedShip.Data.Ship_Type;
+            string operation = selectedShip.Data.Operation_Type.Count > 0 ? selectedShip.Data.Operation_Type[0] : null;
+
+            rlVisualizer.HighlightQuayGrades(shipType, operation);
+            infoPanelObject.gameObject.SetActive(true);
+            infoPanel.UpdateShipInfo(selectedShip, currentSimDay);
+        }
+
+        if (quayInfoPanelObject != null)
+            quayInfoPanelObject.SetActive(false);
+    }
+    void OnMShipSelected(MOR_Runtime selectedShip)
+    {
+        Debug.Log("Selected MOR ship: " + selectedShip.name);
+
+
+        if (morVisualizer != null && morinfoPanel != null)
+        {
+            morVisualizer.ResetGradesOnly();
+
+            string shipType = selectedShip.Data.Ship_Type;
+            string operation = selectedShip.Data.Operation_Type.Count > 0 ? selectedShip.Data.Operation_Type[0] : null;
+
+            morVisualizer.HighlightQuayGrades(shipType, operation);
+            morinfoPanelObject.gameObject.SetActive(true);
+            morinfoPanel.UpdateShipInfo(selectedShip, currentSimDay);
+        }
+
+        if (quayInfoPanelObject != null)
+            quayInfoPanelObject.SetActive(false);
+    }
+
+    void OnWShipSelected(MWKR_Runtime selectedShip)
+    {
+        Debug.Log("Selected MWKR ship: " + selectedShip.name);
+        // Disable other visualizers, enable this one
+
+        if (mwkrVisualizer != null && mwkrinfoPanel != null)
+        {
+            mwkrVisualizer.ResetGradesOnly();
+
+            string shipType = selectedShip.Data.Ship_Type;
+            string operation = selectedShip.Data.Operation_Type.Count > 0 ? selectedShip.Data.Operation_Type[0] : null;
+
+            mwkrVisualizer.HighlightQuayGrades(shipType, operation);
+            mwkrinfoPanelObject.gameObject.SetActive(true);
+            mwkrinfoPanel.UpdateShipInfo(selectedShip, currentSimDay);
+        }
+
+        if (quayInfoPanelObject != null)
+            quayInfoPanelObject.SetActive(false);
+    }
+
 
     void OnQuayWallSelected(GameObject quayWall)
     {
         string quayName = quayWall.name;
         Debug.Log("Clicked quay wall: " + quayName);
+
+        // Show the quay info panel
         quayInfoPanelObject.SetActive(true);
 
-        ShipRuntime foundShip = currentVisualizer.FindShipAtQuay(quayName);
+        ShipRuntime rlShip = rlVisualizer?.FindShipAtQuay(quayName);
+        SPT_ShipRuntime sptShip = sptVisualizer?.FindShipAtQuay(quayName);
+        MOR_Runtime morShip = morVisualizer?.FindShipAtQuay(quayName);
+        MWKR_Runtime mwkrShip = mwkrVisualizer?.FindShipAtQuay(quayName);
 
-        if (infoPanel_1 != null)
-            infoPanel_1.UpdateQuayWallInfo(quayName, foundShip, currentSimDay);
-        else
-            Debug.LogWarning("infoPanel_1 not assigned!");
+        // Update info panel with whichever ship exists
+        if (rlShip != null)
+            infoPanel_1.UpdateQuayWallInfo(quayName, rlShip, currentSimDay);
+        // else if (sptShip != null)
+        //     infoPanel_1.UpdateQuayWallInfo(quayName, sptShip, currentSimDay);
+        // else if (morShip != null)
+        //     infoPanel_1.UpdateQuayWallInfo(quayName, morShip, currentSimDay);
+        // else if (mwkrShip != null)
+        //     infoPanel_1.UpdateQuayWallInfo(quayName, mwkrShip, currentSimDay);
+        // else
+        //     infoPanel_1.UpdateQuayWallInfo(quayName, null, currentSimDay); // no ship at quay
 
-        if (currentVisualizer != null)
-            currentVisualizer.ResetGradesOnly();
-        if (infoPanelObject != null)
-            infoPanelObject.SetActive(false);
+        // Reset grades on all visualizers since UI is now showing the quay
+        rlVisualizer?.ResetGradesOnly();
+        sptVisualizer?.ResetGradesOnly();
+        morVisualizer?.ResetGradesOnly();
+        mwkrVisualizer?.ResetGradesOnly();
+
+        // Hide ship info panel
+        infoPanelObject.SetActive(false);
     }
+    // void OnQuayWallSelected(GameObject quayWall)
+    // {
+    //     string quayName = quayWall.name;
+    //     Debug.Log("Clicked quay wall: " + quayName);
+    //     quayInfoPanelObject.SetActive(true);
+
+    //     ShipRuntime foundShip = currentVisualizer.FindShipAtQuay(quayName);
+
+    //     if (infoPanel_1 != null)
+    //         infoPanel_1.UpdateQuayWallInfo(quayName, foundShip, currentSimDay);
+    //     else
+    //         Debug.LogWarning("infoPanel_1 not assigned!");
+
+    //     if (currentVisualizer != null)
+    //         currentVisualizer.ResetGradesOnly();
+    //     if (infoPanelObject != null)
+    //         infoPanelObject.SetActive(false);
+    // }
     void ClearUIAndVisualizer()
     {
         Debug.Log("Clicked outside of ship or quay — clearing visuals and UI.");
 
         // Reset quay visuals
-        if (currentVisualizer != null)
-            currentVisualizer.ResetGradesOnly();
+        //if (currentVisualizer != null)
+        //    currentVisualizer.ResetGradesOnly();
 
         // Hide both panels
         if (infoPanelObject != null)
@@ -116,4 +354,4 @@ public class ShipController : MonoBehaviour
             quayInfoPanelObject.SetActive(false);
     }
 
-}
+    }

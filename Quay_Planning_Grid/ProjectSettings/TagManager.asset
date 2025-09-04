@@ -8,6 +8,10 @@ TagManager:
   - SPT_Waypoint
   - MOR_Waypoint
   - MWKR_Waypoint
+  - MWKR_Ship
+  - MOR_Ship
+  - RL_Ship
+  - SPT_Ship
   layers:
   - Default
   - TransparentFX

@@ -5,6 +5,7 @@ using TMPro;
 using System.IO;
 using UnityEngine.UI;
 
+public enum SimulationMode { RL, SPT, MOR, MWKR }
 
 #if UNITY_EDITOR_WIN
 using System.Windows.Forms;
@@ -12,6 +13,9 @@ using System.Windows.Forms;
 
 public class DashboardUI : MonoBehaviour
 {
+    public static DashboardUI Instance { get; private set; }
+    public SimulationMode CurrentMode { get; private set; } = SimulationMode.RL;
+
     //public ScheduleManager scheduleManager;
     //public SPT_ScheduleManager SPTScheduleManager;
     public TMP_Text algorithmNameText;
@@ -30,39 +34,68 @@ public class DashboardUI : MonoBehaviour
     public Camera icam3;
     public Camera icam4;
     private Camera activeCam;
+    // [Header("Mini Visualizer")]
+    // public GameObject rlminiVisualizer;
+    // public GameObject sptminiVisualizer;
+    // public GameObject morminiVisualizer;
+    // public GameObject mwkrminiVisualizer;
 
+    //private GameObject activeImage;
+
+    public Camera ActiveCamera => activeCam; // getter property
+
+    private void Awake()
+    {
+        if (Instance == null) Instance = this;
+    }
+   
     private void Start()
     {
         SetActiveCamera(cam1); // Default camera
         UpdateAlgorithmText("RL");
-    }
+        //SetImageActive(rlminiVisualizer);
+        CurrentMode = SimulationMode.RL;
 
+    }
     private void SetActiveCamera(Camera cam)
     {
         if (activeCam != null) activeCam.gameObject.SetActive(false);
         activeCam = cam;
         if (activeCam != null) activeCam.gameObject.SetActive(true);
     }
-
-    public void OnCam1Button() 
+    // private void SetImageActive(GameObject image)
+    // {
+    //     if (activeImage != null) activeImage.gameObject.SetActive(false);
+    //     activeImage = image;
+    //     if (activeImage != null) activeImage.gameObject.SetActive(true);
+    // }
+    public void OnCam1Button()
     {
         SetActiveCamera(cam1);
         UpdateAlgorithmText("RL");
+        //SetImageActive(rlminiVisualizer);
+        CurrentMode = SimulationMode.RL;
     }
-    public void OnCam2Button() 
+    public void OnCam2Button()
     {
         SetActiveCamera(cam2);
         UpdateAlgorithmText("SPT-MF");
+        //SetImageActive(sptminiVisualizer);
+        CurrentMode = SimulationMode.SPT;
     }
-    public void OnCam3Button() 
+    public void OnCam3Button()
     {
         SetActiveCamera(cam3);
         UpdateAlgorithmText("MOR-MF");
+        //SetImageActive(morminiVisualizer);
+        CurrentMode = SimulationMode.MOR;
     }
-    public void OnCam4Button() 
+    public void OnCam4Button()
     {
         SetActiveCamera(cam4);
         UpdateAlgorithmText("MWKR-MF");
+        //SetImageActive(mwkrminiVisualizer);
+        CurrentMode = SimulationMode.MWKR;
     }
     public void OnIsoButton()
     {
@@ -112,14 +145,14 @@ public class DashboardUI : MonoBehaviour
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                // = ofd.FileName;  // ¼±ÅÃÇÑ ÆÄÀÏ °æ·Î ¹ÝÈ¯
-                                                   // ÆÄÀÏ¸í ÃßÃâ
+                // = ofd.FileName;  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½È¯
+                                                   // ï¿½ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½ï¿½ï¿½
                 string fileName = Path.GetFileName(ofd.FileName);
 
-                // »óÀ§ µð·ºÅä¸® 2°³ ÃßÃâ
+                // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ä¸® 2ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                 DirectoryInfo dir = new DirectoryInfo(Path.GetDirectoryName(ofd.FileName));
-                string dir1 = dir?.Name;               // ÇöÀç µð·ºÅä¸®
-                string dir2 = dir?.Parent?.Name;       // »óÀ§ µð·ºÅä¸®
+                string dir1 = dir?.Name;               // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ä¸®
+                string dir2 = dir?.Parent?.Name;       // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ä¸®
 
                 if (!string.IsNullOrEmpty(dir2))
                     textFilePath.text = $"{dir2}/{dir1}/{fileName}";

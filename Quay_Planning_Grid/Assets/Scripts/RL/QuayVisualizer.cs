@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
 
@@ -9,6 +10,9 @@ public class QuayVisualizer : MonoBehaviour
     public QuayData quayScoreDB;
     public GradeMaterialMap materialMap;
     public List<Renderer> quayWallRenderers; // should match quayScoreDB.quayWallNames order
+
+    [Header("Mini Visualizers (UI Panels)")]
+    public List<Image> miniVisualizerImages;  // 28 slots, assign in Inspector for RL
     public Material defaultMat;
 
     // engagement state per quay
@@ -23,10 +27,7 @@ public class QuayVisualizer : MonoBehaviour
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
-
-        // init engagement array sized to renderer list (safe)
-        //int n = Mathf.Max(28, quayWallRenderers?.Count ?? 28);
-        //isQuayEngaged = new bool[n];
+        // init engagement array sized to renderer list (safe)    
         int n = Mathf.Max(
     quayScoreDB?.quayWallNames?.Count ?? 28,
     quayWallRenderers?.Count ?? 28
@@ -46,14 +47,12 @@ public class QuayVisualizer : MonoBehaviour
         isQuayEngaged[quayIndex] = engaged;
         // Re-apply whole visualization so we never accidentally overwrite correct visuals
         ApplyVisualization();
-        //UpdateQuayMaterial(quayIndex);
-
+ 
         // Refresh info panel if it is showing this quay
         if (QuayInfoPanel.Instance != null && QuayInfoPanel.Instance.CurrentQuayIndex == quayIndex)
         {
             ShipRuntime ship = engaged ? FindShipAtQuay(quayScoreDB.quayWallNames[quayIndex]) : null;
-            //SPT_ShipRuntime sship = engaged ? FindSShipAtQuay(quayScoreDB.quayWallNames[quayIndex]) : null;
-/* 
+            /* 
             QuayInfoPanel.Instance.UpdateQuayWallInfo(
                 quayScoreDB.quayWallNames[quayIndex],
                 ship,
@@ -124,20 +123,24 @@ public class QuayVisualizer : MonoBehaviour
             Debug.LogWarning("QuayVisualizer: quayWallRenderers is null");
             return;
         }
-
         for (int i = 0; i < quayWallRenderers.Count; i++)
         {
             isQuayEngaged[i] = false;
             if (quayWallRenderers[i] != null)
                 quayWallRenderers[i].material = defaultMat;
+            // Reset mini visualizers to default color
+            if (i < miniVisualizerImages.Count && miniVisualizerImages[i] != null)
+                miniVisualizerImages[i].color = defaultMat.color;
         }
-
         Debug.Log("QuayVisualizer fully reset (no green materials).");
     }
 
     // INTERNAL ----------------------------------------------------
-    void ApplyVisualization()
+    public void ApplyVisualization()
     {
+        //bool showGrades = visualizerActive && highlightActive;
+
+        Debug.Log($"{name} ApplyVisualization called. HighlightActive={highlightActive}, miniVisualizerImages.Count={miniVisualizerImages.Count}");
         // If highlightActive, find the ship type entry & operation entry (if possible)
         ShipTypeScores shipEntry = null;
         OperationQuayScores opEntry = null;
@@ -158,19 +161,27 @@ public class QuayVisualizer : MonoBehaviour
             if (i < isQuayEngaged.Length && isQuayEngaged[i])
             {
                 renderer.material = materialMap.engagedMaterial;
-                continue;
             }
-
+            else
+            {
+                renderer.material = defaultMat;
+            }
             // if we have a highlight and an opEntry, show grade for that quay
             if (opEntry != null && i < opEntry.quayScores.Count)
             {
                 var grade = opEntry.quayScores[i];
-                renderer.material = materialMap.GetMaterial(grade);
-                continue;
-            }
+                //renderer.material = materialMap.GetMaterial(grade);
+                Color gradeColor = materialMap.GetMaterial(grade).color;
 
-            // default fall back material
-            renderer.material = defaultMat;
+                if (i < miniVisualizerImages.Count && miniVisualizerImages[i] != null)
+                    miniVisualizerImages[i].color = gradeColor;
+            }
+            else
+            {
+                if (i < miniVisualizerImages.Count && miniVisualizerImages[i] != null)
+                    miniVisualizerImages[i].color = Color.white; // fallback
+            }
+            // default fall back material     
         }
     }
     public ShipRuntime FindShipAtQuay(string quayName)
@@ -212,46 +223,6 @@ public class QuayVisualizer : MonoBehaviour
 
         return null;
     }
-    /* public SPT_ShipRuntime FindSShipAtQuay(string quayName)
-    {
-        if (string.IsNullOrWhiteSpace(quayName))
-        {
-            Debug.LogWarning("FindShipAtQuay called with null or empty quayName");
-            return null;
-        }
-
-        // Ignore reserved names
-        if (string.Equals(quayName.Trim(), "Source", StringComparison.OrdinalIgnoreCase))
-        {
-            Debug.Log($"Ignoring non-quay name: {quayName}");
-            return null;
-        }
-
-        // Normalize and find the index
-        string normalizedName = quayName.Trim();
-        int quayIndex = quayScoreDB.quayWallNames.FindIndex(
-            q => string.Equals(q.Trim(), normalizedName, StringComparison.OrdinalIgnoreCase)
-        );
-
-        if (quayIndex < 0)
-        {
-            Debug.LogWarning($"Quay name '{quayName}' not found in quayWallNames list.");
-            return null;
-        }
-
-        // Look for a ship whose AI target matches (ignoring case and spaces)
-        foreach (SPT_ShipRuntime sship in FindObjectsOfType<SPT_ShipRuntime>())
-        {
-            SPT_Controller ai = sship.GetComponent<SPT_Controller>();
-            if (ai != null && string.Equals(ai.currentTarget?.Trim(), normalizedName, StringComparison.OrdinalIgnoreCase))
-            {
-                return sship;
-            }
-        }
-
-        return null;
-    } */
-
 #if UNITY_EDITOR
     [ContextMenu("Auto-Fill RL_Waypoint Renderers")]
     private void AutoFillRLRenderers()

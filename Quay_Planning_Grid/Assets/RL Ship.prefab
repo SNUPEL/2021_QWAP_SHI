@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 5412184995977365023}
   m_Layer: 0
   m_Name: RL Ship
-  m_TagString: RL_Waypoint
+  m_TagString: RL_Ship
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

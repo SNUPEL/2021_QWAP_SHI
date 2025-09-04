@@ -17,5 +17,5 @@ MonoBehaviour:
   gradeC: {fileID: 2100000, guid: a2b7b7e061baf402a88304829cde5b3d, type: 2}
   gradeD: {fileID: 2100000, guid: 1180282047a814f8d88314db781fb930, type: 2}
   gradeE: {fileID: 2100000, guid: e4c52fa9041a745cc89a9e49d560434d, type: 2}
-  gradeN: {fileID: 2100000, guid: 4478037b48d714426b44b86412d2adec, type: 2}
+  gradeN: {fileID: 2100000, guid: 867813f76c0d24d97af21bfd276cc024, type: 2}
   engagedMaterial: {fileID: 2100000, guid: deb4134b600ab4b3b85e146518696849, type: 2}

@@ -1,8 +1,11 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using TMPro;  // or UnityEngine.UI if you use regular UI text
 
-public class ShipInfoPanel : MonoBehaviour
+public class SPTInfoPanel : MonoBehaviour
 {
+   
     public TMP_Text shipIdText;
     public TMP_Text shipTypeText;
     //public TMP_Text prevOperationText;
@@ -14,10 +17,10 @@ public class ShipInfoPanel : MonoBehaviour
     public TMP_Text delayCostText;
     public TMP_Text moveCostText;
     //public TMP_Text totalCostText;
-    private ShipRuntime currentShip;
+    private SPT_ShipRuntime currentShip;
     private int lastSimDay = -1;
 
-    public void UpdateShipInfo(ShipRuntime selectedShip, int currentSimDay)
+    public void UpdateShipInfo(SPT_ShipRuntime selectedShip, int currentSimDay)
     {
         currentShip = selectedShip;
         lastSimDay = currentSimDay;
@@ -42,7 +45,7 @@ public class ShipInfoPanel : MonoBehaviour
         //    : "-");
     }
 
-    private int GetCurrentOperationIndex(ShipRuntime ship, int currentSimDay)
+    private int GetCurrentOperationIndex(SPT_ShipRuntime ship, int currentSimDay)
     {
         // We assume ship.Data.Start_Dates and Finish_Dates correspond to operations
         for (int i = 0; i < ship.Data.Start_Dates.Count; i++)
@@ -61,7 +64,7 @@ public class ShipInfoPanel : MonoBehaviour
         return -1; // no current operation
     }
 
-    string FormatOperation(ShipRuntime ship, int index)
+    string FormatOperation(SPT_ShipRuntime ship, int index)
     {
         if (index >= 0 && index < ship.Data.Operation_Name.Count && index < ship.Data.Operation_Type.Count)
         {
@@ -73,7 +76,7 @@ public class ShipInfoPanel : MonoBehaviour
         }
     }
 
-    public void UpdateCosts(ShipRuntime ship)
+    public void UpdateCosts(SPT_ShipRuntime ship)
     {
         lossCostText.text = $"Loss: ${ship.lossCost:N0}";
         delayCostText.text = $"Delay: ${ship.delayCost:N0}";

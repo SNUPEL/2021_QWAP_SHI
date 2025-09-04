@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using System;
 
 public class MWKR_Visualizer : MonoBehaviour
@@ -10,8 +11,10 @@ public class MWKR_Visualizer : MonoBehaviour
     public QuayData quayScoreDB;
     public GradeMaterialMap materialMap;
     public List<Renderer> quayWallRenderers; // should match quayScoreDB.quayWallNames order
-    public Material defaultMat;
 
+    [Header("Mini Visualizers (UI Panels)")]
+    public List<Image> miniVisualizerImages;  // 28 slots, assign in Inspector for RL
+    public Material defaultMat;
     // engagement state per quay
     private bool[] isQuayEngaged;
 
@@ -24,10 +27,7 @@ public class MWKR_Visualizer : MonoBehaviour
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
-
         // init engagement array sized to renderer list (safe)
-        //int n = Mathf.Max(28, quayWallRenderers?.Count ?? 28);
-        //isQuayEngaged = new bool[n];
         int n = Mathf.Max(
     quayScoreDB?.quayWallNames?.Count ?? 28,
     quayWallRenderers?.Count ?? 28
@@ -52,9 +52,7 @@ public class MWKR_Visualizer : MonoBehaviour
         // Refresh info panel if it is showing this quay
         if (QuayInfoPanel.Instance != null && QuayInfoPanel.Instance.CurrentQuayIndex == quayIndex)
         {
-            //ShipRuntime ship = engaged ? FindShipAtQuay(quayScoreDB.quayWallNames[quayIndex]) : null;
-            MWKR_Runtime wship = engaged ? FindWShipAtQuay(quayScoreDB.quayWallNames[quayIndex]) : null;
-
+            MWKR_Runtime wship = engaged ? FindShipAtQuay(quayScoreDB.quayWallNames[quayIndex]) : null;
             /* QuayInfoPanel.Instance.UpdateQuayWallInfo(
                 quayScoreDB.quayWallNames[quayIndex],
                 sship,
@@ -131,6 +129,9 @@ public class MWKR_Visualizer : MonoBehaviour
             isQuayEngaged[i] = false;
             if (quayWallRenderers[i] != null)
                 quayWallRenderers[i].material = defaultMat;
+            // Reset mini visualizers to default color
+            if (i < miniVisualizerImages.Count && miniVisualizerImages[i] != null)
+                miniVisualizerImages[i].color = defaultMat.color;    
         }
 
         Debug.Log("QuayVisualizer fully reset (no green materials).");
@@ -159,23 +160,31 @@ public class MWKR_Visualizer : MonoBehaviour
             if (i < isQuayEngaged.Length && isQuayEngaged[i])
             {
                 renderer.material = materialMap.engagedMaterial;
-                continue;
             }
-
+             else
+            {
+                renderer.material = defaultMat;
+            }
             // if we have a highlight and an opEntry, show grade for that quay
             if (opEntry != null && i < opEntry.quayScores.Count)
             {
                 var grade = opEntry.quayScores[i];
-                renderer.material = materialMap.GetMaterial(grade);
-                continue;
-            }
+                //renderer.material = materialMap.GetMaterial(grade);
+                Color gradeColor = materialMap.GetMaterial(grade).color;
 
+                if (i < miniVisualizerImages.Count && miniVisualizerImages[i] != null)
+                    miniVisualizerImages[i].color = gradeColor;
+            }
+            else
+          {
+                if (i < miniVisualizerImages.Count && miniVisualizerImages[i] != null)
+                    miniVisualizerImages[i].color = Color.white; // fallback
+            }
             // default fall back material
-            renderer.material = defaultMat;
         }
     }
 
-    public MWKR_Runtime FindWShipAtQuay(string quayName)
+    public MWKR_Runtime FindShipAtQuay(string quayName)
     {
         if (string.IsNullOrWhiteSpace(quayName))
         {

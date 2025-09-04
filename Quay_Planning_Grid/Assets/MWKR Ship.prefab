@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -2734460158466869150}
   m_Layer: 0
   m_Name: MWKR Ship
-  m_TagString: MWKR_Waypoint
+  m_TagString: MWKR_Ship
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
