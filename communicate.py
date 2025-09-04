@@ -41,7 +41,7 @@ if __name__=="__main__":
         for j in assignment:
             PDR.append(i + "-" + j)
 
-    data_dir = ""  # TODO: Unity로 입력받도록 코드 구성
+    data_dir = cfg.data_path  # TODO: Unity로 입력받도록 코드 구성
     res_dir = ""  # TODO: Unity로 전송되도록 코드 구성
 
     test_paths = os.listdir(data_dir)
@@ -137,3 +137,6 @@ if __name__=="__main__":
         df_move_cost[name] = list_move_cost + [sum(list_move_cost) / len(list_move_cost)]
         df_loss_cost[name] = list_loss_cost + [sum(list_loss_cost) / len(list_loss_cost)]
         df_computing_time[name] = list_computing_time + [sum(list_computing_time) / len(list_computing_time)]
+
+        # 인덱스 제외하고 저장
+        df_delay.to_csv("output_no_index.csv", index=False, encoding="utf-8-sig")

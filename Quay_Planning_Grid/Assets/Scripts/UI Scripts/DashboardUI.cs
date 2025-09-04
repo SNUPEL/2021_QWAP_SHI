@@ -24,6 +24,8 @@ public class DashboardUI : MonoBehaviour
     public TextMeshProUGUI textNumberOfQuays;
     public TextMeshProUGUI textNumberOfShips;
 
+    private string FilePath = string.Empty;
+
     [Header("Cameras")]
     public Camera cam1;
     public Camera cam2;
@@ -120,8 +122,10 @@ public class DashboardUI : MonoBehaviour
     {
         SimulationController.Instance?.ResetSimulation();
 
-        SimulationController.Instance?.StartSimulation();
-        
+        SimulationController.Instance?.Play();
+
+
+        SimulationController.Instance.StartSimulation(FilePath);
     }
 
     public void OnPauseButtonClicked() => SimulationController.Instance?.PauseSimulation();
@@ -159,6 +163,7 @@ public class DashboardUI : MonoBehaviour
                 if (!string.IsNullOrEmpty(dir1))
                     textFilePath.text = $"{dir1}/{fileName}";
                 textFileName.text = Path.GetFileNameWithoutExtension(ofd.FileName);
+                FilePath = ofd.FileName;
             }
         }
 #endif
@@ -175,6 +180,7 @@ public class DashboardUI : MonoBehaviour
         ui.SelectedNumberOfShips = (int)ui.NumberOfShips.value;
         textFilePath.text = "> No file selected";
         textFileName.text = "-";
+        FilePath = string.Empty;
     }
 
 }
