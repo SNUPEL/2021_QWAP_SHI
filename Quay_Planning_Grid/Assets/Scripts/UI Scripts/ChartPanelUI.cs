@@ -20,7 +20,7 @@ public class ChartPanelUI : MonoBehaviour,
 
 
     [Header("Hover Settings")]
-    private float hoverScale = 1f;      // 드래그/호버 시 살짝 확대
+    private float hoverScale = 1.03f;      // 드래그/호버 시 살짝 확대
     public float hoverAlpha = 1f;      // 드래그 시 살짝 투명
     public bool bringToFrontOnDrag = true;
 

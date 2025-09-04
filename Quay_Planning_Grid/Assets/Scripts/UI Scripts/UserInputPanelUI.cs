@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -19,6 +20,13 @@ public class UserInputPanelUI : MonoBehaviour,
 
     [Header("Bounds")]
     public bool clampToParent = true;     // 부모 Rect 영역 안으로 제한
+
+    [Header("Inputs")]
+    public TextMeshProUGUI textNumberOfWalls;
+    public TextMeshProUGUI textNumberOfShips;
+    public Slider NumberOfShips;
+
+    public int SelectedNumberOfShips;
 
     private RectTransform rt;
     private RectTransform parentRt;
@@ -55,6 +63,13 @@ public class UserInputPanelUI : MonoBehaviour,
             // GraphicRaycaster가 없다면 추가
             if (GetComponent<GraphicRaycaster>() == null) gameObject.AddComponent<GraphicRaycaster>();
         }
+    }
+
+    private void Start()
+    {
+        UpdateNumberOfSelectedShips(NumberOfShips.value);
+        NumberOfShips.onValueChanged.AddListener(UpdateNumberOfSelectedShips);
+        SelectedNumberOfShips = (int)NumberOfShips.value;
     }
 
     // 마우스가 패널 위에 들어왔을 때(호버) – 시각효과(선택)
@@ -136,5 +151,13 @@ public class UserInputPanelUI : MonoBehaviour,
         float x = Mathf.Clamp(desiredAnchoredPos.x, left, right);
         float y = Mathf.Clamp(desiredAnchoredPos.y, bottom, top);
         return new Vector2(x, y);
+    }
+
+    public void UpdateNumberOfSelectedShips(float value)
+    {
+        if (textNumberOfShips != null)
+        {
+            textNumberOfShips.text = value.ToString("F0");
+        }
     }
 }

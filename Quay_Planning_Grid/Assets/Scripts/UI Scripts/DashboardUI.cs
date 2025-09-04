@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using System.IO;
+using UnityEngine.UI;
+
 
 #if UNITY_EDITOR_WIN
 using System.Windows.Forms;
@@ -15,6 +17,8 @@ public class DashboardUI : MonoBehaviour
     public TMP_Text algorithmNameText;
     public TextMeshProUGUI textFilePath;
     public TextMeshProUGUI textFileName;
+    public TextMeshProUGUI textNumberOfQuays;
+    public TextMeshProUGUI textNumberOfShips;
 
     [Header("Cameras")]
     public Camera cam1;
@@ -125,6 +129,19 @@ public class DashboardUI : MonoBehaviour
             }
         }
 #endif
-
     }
+    public void OnTypeAButtonClicked(UserInputPanelUI ui)
+    {
+        ui.NumberOfShips.value = ui.SelectedNumberOfShips;
+    }
+
+    public void OnUserInputPanelOkButtonClicked(UserInputPanelUI ui)
+    {
+        this.textNumberOfQuays.text = ui.textNumberOfWalls.text;
+        this.textNumberOfShips.text = ui.textNumberOfShips.text;
+        ui.SelectedNumberOfShips = (int)ui.NumberOfShips.value;
+        textFilePath.text = "> No file selected";
+        textFileName.text = "-";
+    }
+
 }
