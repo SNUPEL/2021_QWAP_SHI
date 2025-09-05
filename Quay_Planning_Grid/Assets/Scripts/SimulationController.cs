@@ -27,7 +27,7 @@ public class SimulationController : MonoBehaviour
     
     public void ResetSimulation()
     {
-        Debug.Log("Simulation reset.");
+        UnityEngine.Debug.Log("Simulation reset.");
 
         // 1. Destroy all active ships
         //var ships = FindObjectsOfType<ShipRuntime>();
