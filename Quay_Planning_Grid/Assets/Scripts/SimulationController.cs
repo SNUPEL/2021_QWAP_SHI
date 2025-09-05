@@ -1,6 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+using System.Diagnostics;
+using System.Text;
+
+
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -21,7 +27,7 @@ public class SimulationController : MonoBehaviour
     
     public void ResetSimulation()
     {
-        Debug.Log("Simulation reset.");
+        UnityEngine.Debug.Log("Simulation reset.");
 
         // 1. Destroy all active ships
         //var ships = FindObjectsOfType<ShipRuntime>();
@@ -82,12 +88,45 @@ public class SimulationController : MonoBehaviour
         // 9. Optionally disable SimulationClock (if it uses Update or Coroutines)
         //StopAllCoroutines(); // if you started any in this controller
 
-        Debug.Log("Simulation state reset complete.");
+        UnityEngine.Debug.Log("Simulation state reset complete.");
     }
 
-    public void StartSimulation()
+    public void StartSimulation(string filePath)
     {
-        Debug.Log("Simulation started.");
+        string _pythonScriptPath = "C:\\repos\\2021_QWAP_SHI\\communicate.py";
+        string _args = "";
+        ProcessStartInfo psi = new ProcessStartInfo
+        {
+            FileName = "C:\\Users\\User\\anaconda3\\python.exe",
+            Arguments = $"\"{_pythonScriptPath}\" {_args}",
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            StandardOutputEncoding = Encoding.UTF8,
+            StandardErrorEncoding = Encoding.UTF8
+        };
+
+        using (Process process = new Process())
+        {
+            process.StartInfo = psi;
+            process.Start();
+
+            string output = process.StandardOutput.ReadToEnd();
+            string error = process.StandardError.ReadToEnd();
+
+            process.WaitForExit();
+
+            UnityEngine.Debug.Log("Python Output: " + output);
+            if (!string.IsNullOrEmpty(error))
+                UnityEngine.Debug.LogError("Python Error: " + error);
+
+        }
+    }
+
+    public void Play()
+    {
+        UnityEngine.Debug.Log("Simulation started.");
         StartCoroutine(DelayedSimulationStart());
     }
 
@@ -97,10 +136,10 @@ public class SimulationController : MonoBehaviour
         SimulationClock.Instance.simulationStarted = false;
 
         countdownUI.StartCountdown();
-        Debug.Log("Waiting for countdown...");
+        UnityEngine.Debug.Log("Waiting for countdown...");
 
         yield return new WaitForSecondsRealtime(3F); // Delay before sim clock starts
-        Debug.Log("Countdown finished. Starting simulation clock.");
+        UnityEngine.Debug.Log("Countdown finished. Starting simulation clock.");
 
         // Now start simulation clock
         SimulationClock.Instance.simulationStarted = true;
@@ -116,7 +155,7 @@ public class SimulationController : MonoBehaviour
 
     public void PauseSimulation()
     {
-        Debug.Log("Simulation paused.");
+        UnityEngine.Debug.Log("Simulation paused.");
         Time.timeScale = 0f;
         SimulationClock.Instance.simulationStarted = false; // Optional
     }
@@ -131,7 +170,7 @@ public class SimulationController : MonoBehaviour
     }
     public void ResumeSimulation()
     {
-        Debug.Log("Simulation resumed.");
+        UnityEngine.Debug.Log("Simulation resumed.");
         Time.timeScale = 5f;
         // Recalculate offset to keep clock accurate after resume
         SimulationClock.Instance._startTime = Time.time - SimulationClock.Instance.simulationTime;

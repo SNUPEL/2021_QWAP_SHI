@@ -5,11 +5,11 @@ using TMPro;
 using System.IO;
 using UnityEngine.UI;
 
-public enum SimulationMode { RL, SPT, MOR, MWKR }
-
 #if UNITY_EDITOR_WIN
 using System.Windows.Forms;
 #endif
+public enum SimulationMode { RL, SPT, MOR, MWKR }
+
 
 public class DashboardUI : MonoBehaviour
 {
@@ -23,6 +23,8 @@ public class DashboardUI : MonoBehaviour
     public TextMeshProUGUI textFileName;
     public TextMeshProUGUI textNumberOfQuays;
     public TextMeshProUGUI textNumberOfShips;
+
+    private string FilePath = string.Empty;
 
     [Header("Cameras")]
     public Camera cam1;
@@ -120,8 +122,10 @@ public class DashboardUI : MonoBehaviour
     {
         SimulationController.Instance?.ResetSimulation();
 
-        SimulationController.Instance?.StartSimulation();
-        
+        SimulationController.Instance?.Play();
+
+
+        SimulationController.Instance.StartSimulation(FilePath);
     }
 
     public void OnPauseButtonClicked() => SimulationController.Instance?.PauseSimulation();
@@ -145,20 +149,17 @@ public class DashboardUI : MonoBehaviour
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                // = ofd.FileName;  // ������ ���� ��� ��ȯ
-                                                   // ���ϸ� ����
                 string fileName = Path.GetFileName(ofd.FileName);
-
-                // ���� ���丮 2�� ����
                 DirectoryInfo dir = new DirectoryInfo(Path.GetDirectoryName(ofd.FileName));
-                string dir1 = dir?.Name;               // ���� ���丮
-                string dir2 = dir?.Parent?.Name;       // ���� ���丮
+                string dir1 = dir?.Name;
+                string dir2 = dir?.Parent?.Name;
 
                 if (!string.IsNullOrEmpty(dir2))
                     textFilePath.text = $"{dir2}/{dir1}/{fileName}";
                 if (!string.IsNullOrEmpty(dir1))
                     textFilePath.text = $"{dir1}/{fileName}";
                 textFileName.text = Path.GetFileNameWithoutExtension(ofd.FileName);
+                FilePath = ofd.FileName;
             }
         }
 #endif
@@ -175,6 +176,7 @@ public class DashboardUI : MonoBehaviour
         ui.SelectedNumberOfShips = (int)ui.NumberOfShips.value;
         textFilePath.text = "> No file selected";
         textFileName.text = "-";
+        FilePath = string.Empty;
     }
 
 }

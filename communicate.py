@@ -8,24 +8,13 @@ from cfg_communicate import get_cfg
 from environment.env import *
 from agent.network import *
 from agent.heuristics import *
+import sys
 
 if __name__=="__main__":
     cfg = get_cfg()
 
     model_path = cfg.model_path
     param_path = cfg.param_path
-
-    # data_dir = ["./input/test/v2/25-60/",
-    #             "./input/test/v2/25-70/",
-    #             "./input/test/v2/25-80/",
-    #             "./input/test/v2/25-90/",
-    #             "./input/test/v2/25-100/"]
-    # res_dir = ["./output/test/v2/25-60/",     # 아마도 Result의 약자인 듯
-    #            "./output/test/v2/25-70/",
-    #            "./output/test/v2/25-80/",
-    #            "./output/test/v2/25-90/",
-    #            "./output/test/v2/25-100/"]
-    #
 
     use_gnn = bool(cfg.use_gnn)
     use_added_info = bool(cfg.use_added_info)
@@ -34,15 +23,14 @@ if __name__=="__main__":
     algorithm = cfg.algorithm
     random_seed = cfg.random_seed
 
-    sequencing = ["SPT", "MOR", "MWKR"]
-    assignment = ["MF", "LU", "HP"]
-    PDR = []
-    for i in sequencing:
-        for j in assignment:
-            PDR.append(i + "-" + j)
+    PDR = ["SPT-MF", "MOR-MF", "MWKR-MF"]
 
-    data_dir = ""  # TODO: Unity로 입력받도록 코드 구성
-    res_dir = ""  # TODO: Unity로 전송되도록 코드 구성
+    if len(sys.argv) > 1:
+        data_dir = sys.argv[1]  # TODO: Unity로 입력받도록 코드 구성
+        res_dir = sys.argv[2]  # TODO: Unity로 전송되도록 코드 구성
+    else:
+        data_dir = cfg.data_path
+        res_dir = cfg.res_path
 
     test_paths = os.listdir(data_dir)
     index = ["P%d" % i for i in range(1, len(test_paths) + 1)] + ["avg"]
@@ -78,32 +66,39 @@ if __name__=="__main__":
 
             env = QuayScheduling(data_dir + path, algorithm=name,
                                  state_encoding=encoding, restriction=restriction,
-                                 record_events=False, device=torch.device('cpu'))
+                                 record_events=True, device=torch.device('cpu'))
 
-            embed_dim = cfg.embed_dim
-            num_heads = cfg.num_heads
-            num_HGT_layers = cfg.num_HGT_layers
-            num_actor_layers = cfg.num_actor_layers
-            num_critic_layers = cfg.num_critic_layers
 
-            agent = Scheduler(env.meta_data, env.state_size, env.num_nodes,
-                              int(embed_dim),
-                              int(num_heads),
-                              int(num_HGT_layers),
-                              int(num_actor_layers),
-                              int(num_critic_layers),
-                              use_gnn=use_gnn, use_added_info=use_added_info).to(torch.device('cpu'))
-            checkpoint = torch.load(model_path, map_location=torch.device('cpu'))
-            agent.load_state_dict(checkpoint['model_state_dict'])
+            if name == "RL":
+                embed_dim = cfg.embed_dim
+                num_heads = cfg.num_heads
+                num_HGT_layers = cfg.num_HGT_layers
+                num_actor_layers = cfg.num_actor_layers
+                num_critic_layers = cfg.num_critic_layers
+
+                agent = Scheduler(env.meta_data, env.state_size, env.num_nodes,
+                                  int(embed_dim),
+                                  int(num_heads),
+                                  int(num_HGT_layers),
+                                  int(num_actor_layers),
+                                  int(num_critic_layers),
+                                  use_gnn=use_gnn, use_added_info=use_added_info).to(torch.device('cpu'))
+                checkpoint = torch.load(model_path, map_location=torch.device('cpu'))
+                agent.load_state_dict(checkpoint['model_state_dict'])
+            else:
+                agent = Heuristic(env.num_of_ships, env.num_of_quays)
 
             start = time.time()
             state, mask, current_ops, added_info = env.reset()
             done = False
 
             while not done:
-                action, _, _ = agent.act(state, mask, current_ops, added_info, greedy=False)
+                if name == "RL":
+                    action, _, _ = agent.act(state, mask, current_ops, added_info, greedy=False)
+                else:
+                    action = agent.act(state)
 
-                next_state, reward, done, next_mask, next_current_ops, next_added_info = env.step(action)
+                next_state, _, done, next_mask, next_current_ops, next_added_info = env.step(action)
 
                 state = next_state
                 mask = next_mask
@@ -137,3 +132,18 @@ if __name__=="__main__":
         df_move_cost[name] = list_move_cost + [sum(list_move_cost) / len(list_move_cost)]
         df_loss_cost[name] = list_loss_cost + [sum(list_loss_cost) / len(list_loss_cost)]
         df_computing_time[name] = list_computing_time + [sum(list_computing_time) / len(list_computing_time)]
+
+
+
+
+
+        writer = pd.ExcelWriter(res_dir + name + '_results.xlsx')
+        df_delay.to_excel(writer, sheet_name="delay")
+        df_move.to_excel(writer, sheet_name="move")
+        df_priority.to_excel(writer, sheet_name="priority")
+        df_delay_cost.to_excel(writer,sheet_name="delay_cost")
+        df_move_cost.to_excel(writer, sheet_name="move_cost")
+        df_loss_cost.to_excel(writer, sheet_name="loss_cost")
+        df_computing_time.to_excel(writer, sheet_name="computing_time")
+        env.get_logs().to_excel(writer, sheet_name="logs")
+        writer.close()

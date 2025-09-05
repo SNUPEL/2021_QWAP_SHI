@@ -15,7 +15,8 @@ def get_cfg():
     parser.add_argument("--random_seed", type=int, default=42, help="random seed")
 
     parser.add_argument("--n_ships", type=int, default=80, help="number of ships in data")
-    parser.add_argument("--data_path", type=str, default='input/configurations/v2/config (m=25).xlsx', help="input data path")
+    parser.add_argument("--data_path", type=str, default='input/test/25-80/', help="input data path")
+    parser.add_argument("--res_path", type=str, default='output/', help="output data path")
 
     parser.add_argument("--use_gnn", type=int, default=1, help="whether to use gnn")
     parser.add_argument("--use_added_info", type=int, default=1, help="whether to use additional information")
