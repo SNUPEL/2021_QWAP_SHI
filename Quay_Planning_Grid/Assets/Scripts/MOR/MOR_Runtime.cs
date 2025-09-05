@@ -30,10 +30,10 @@ public class MOR_Runtime : MonoBehaviour
         }
     }
     // Call this every time the ship moves (e.g., from AIController.MoveTo)
-    public void RegisterMove()
-    {
-        moveCount++;
-    }
+    //public void RegisterMove()
+    //{
+    //    moveCount++;
+    //}
 
     //Call this regularly (e.g., Update or when sim time changes)
     public void UpdateCosts(int currentSimDay)

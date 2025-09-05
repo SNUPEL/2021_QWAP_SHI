@@ -164,7 +164,7 @@ public class SPT_ShipRuntime : MonoBehaviour
         QuayScoreGrade grade = operationEntry.quayScores[quayIndex];
         if (grade == QuayScoreGrade.C || grade == QuayScoreGrade.D || grade == QuayScoreGrade.E)
         {
-            lossCost = 15000; // fixed cost per operation at low-priority quay
+            lossCost += 15000; // fixed cost per operation at low-priority quay
         }
         else
         {

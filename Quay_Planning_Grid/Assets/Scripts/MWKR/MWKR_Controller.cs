@@ -83,11 +83,11 @@ public class MWKR_Controller : MonoBehaviour
 
         // Update current target
         currentTarget = trimmedLocation;
-        moveCount++;
-        if (shipRuntime != null)
-        {
-            shipRuntime.IncrementMoveCount();
-        }
+        //moveCount++;
+        //if (shipRuntime != null)
+        //{
+        //    shipRuntime.IncrementMoveCount();
+        //}
 
         // If we were on a quay and are leaving it (oldTarget != currentTarget), free the old quay
 
@@ -103,7 +103,7 @@ public class MWKR_Controller : MonoBehaviour
             mwkrVisualizer.SetQuayEngagement(currentTarget, true);
             MWKR_Runtime mship = GetComponent<MWKR_Runtime>();
             //QuayInfoPanel.Instance?.NotifyShipChanges(currentTarget, mship);
-
+            mship.IncrementMoveCount();
         }
         // Teleport/move to the waypoint
         transform.position = target.transform.position;
@@ -116,6 +116,13 @@ public class MWKR_Controller : MonoBehaviour
 
             MoveShipToGrid();
             hasBeenDelivered = true;
+
+            var runtime = GetComponent<MWKR_Runtime>();
+            if (runtime != null)
+            {
+                int sinkDay = SimulationClock.Instance != null ? SimulationClock.Instance.simulationTime : 0;
+                runtime.MarkDelivered(sinkDay);
+            }
         }
 
         // keep previousTarget if you still need it elsewhere
@@ -157,13 +164,26 @@ public class MWKR_Controller : MonoBehaviour
             SimulationClock.Instance.simulationStarted = false;
         }
 
-        // Optional: visually mark the ship as "done"
-        //GetComponent<Renderer>().material.color = Color.gray;
+        MWKR_Runtime runtime = GetComponent<MWKR_Runtime>();
+        if (runtime != null)
+        {
+            float totalCost = runtime.TotalCost;
 
-        //Color assignement based on the costs
-        //float cost = ship.totalCost;
-        //Color costColor = GetColorForCost(cost);
-        //GetComponent<Renderer>().material.color = costColor;
+            // Example: map totalCost to a 0–1 range for gradient
+            float minCost = 15000f;      // expected min total cost
+            float maxCost = 90000f; // expected max total cost
+            float t = Mathf.Clamp01((totalCost - minCost) / (maxCost - minCost));
+
+            // Gradient from white (low cost) → black (high cost)
+            Color costColor = Color.Lerp(Color.white, Color.black, t);
+
+            // Assign to renderer
+            Renderer rend = GetComponent<Renderer>();
+            if (rend != null)
+            {
+                rend.material.color = costColor;
+            }
+        }
     }
     public static void ResetDeliveredCount()
     {

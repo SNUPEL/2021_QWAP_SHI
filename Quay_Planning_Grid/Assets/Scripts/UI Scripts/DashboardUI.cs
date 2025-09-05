@@ -34,13 +34,13 @@ public class DashboardUI : MonoBehaviour
     public Camera icam3;
     public Camera icam4;
     private Camera activeCam;
-    // [Header("Mini Visualizer")]
-    // public GameObject rlminiVisualizer;
-    // public GameObject sptminiVisualizer;
-    // public GameObject morminiVisualizer;
-    // public GameObject mwkrminiVisualizer;
+    [Header("Ship Data UI")]
+    public GameObject RL;
+    public GameObject SPT;
+    public GameObject MOR;
+    public GameObject MWKR;
 
-    //private GameObject activeImage;
+    private GameObject activeImage;
 
     public Camera ActiveCamera => activeCam; // getter property
 
@@ -53,7 +53,7 @@ public class DashboardUI : MonoBehaviour
     {
         SetActiveCamera(cam1); // Default camera
         UpdateAlgorithmText("RL");
-        //SetImageActive(rlminiVisualizer);
+        SetImageActive(RL);
         CurrentMode = SimulationMode.RL;
 
     }
@@ -63,31 +63,31 @@ public class DashboardUI : MonoBehaviour
         activeCam = cam;
         if (activeCam != null) activeCam.gameObject.SetActive(true);
     }
-    // private void SetImageActive(GameObject image)
-    // {
-    //     if (activeImage != null) activeImage.gameObject.SetActive(false);
-    //     activeImage = image;
-    //     if (activeImage != null) activeImage.gameObject.SetActive(true);
-    // }
+    private void SetImageActive(GameObject image)
+    {
+        if (activeImage != null) activeImage.gameObject.SetActive(false);
+        activeImage = image;
+        if (activeImage != null) activeImage.gameObject.SetActive(true);
+    }
     public void OnCam1Button()
     {
         SetActiveCamera(cam1);
         UpdateAlgorithmText("RL");
-        //SetImageActive(rlminiVisualizer);
+        SetImageActive(RL);
         CurrentMode = SimulationMode.RL;
     }
     public void OnCam2Button()
     {
         SetActiveCamera(cam2);
         UpdateAlgorithmText("SPT-MF");
-        //SetImageActive(sptminiVisualizer);
+        SetImageActive(SPT);
         CurrentMode = SimulationMode.SPT;
     }
     public void OnCam3Button()
     {
         SetActiveCamera(cam3);
         UpdateAlgorithmText("MOR-MF");
-        //SetImageActive(morminiVisualizer);
+        SetImageActive(MOR);
         CurrentMode = SimulationMode.MOR;
     }
     public void OnCam4Button()
