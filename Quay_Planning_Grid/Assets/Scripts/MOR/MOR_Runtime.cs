@@ -18,7 +18,33 @@ public class MOR_Runtime : MonoBehaviour
     private int moveCount = 0;
     public QuayData quayScoreDB; // assign in inspector or get reference somehow
     MOR_Visualizer currentVisualizer;
+    public bool IsDelivered { get; private set; } = false;
+    public int finalLossCost = 0;
+    public int finalDelayCost = 0;
+    public int finalMoveCost = 0;
 
+    public int TotalCost =>
+    IsDelivered ? (finalLossCost + finalDelayCost + finalMoveCost)
+                : (lossCost + delayCost + moveCost);
+
+    public void MarkDelivered(int sinkDay)
+    {
+        if (IsDelivered) return; // already frozen
+
+        IsDelivered = true;
+
+        // Freeze current costs
+        finalLossCost = lossCost;
+        finalMoveCost = moveCost;
+
+        // Delay cost rule: only if delivery is later than planned
+        if (sinkDay > Data.Delivery_Date)
+            finalDelayCost = (sinkDay - Data.Delivery_Date) * 15000;
+        else
+            finalDelayCost = 0;
+
+        Debug.Log($"{Data.Ship_Name} delivered on {sinkDay}. Frozen costs: L={finalLossCost}, D={finalDelayCost}, M={finalMoveCost}");
+    }
     void Awake()
     {
 
@@ -30,10 +56,10 @@ public class MOR_Runtime : MonoBehaviour
         }
     }
     // Call this every time the ship moves (e.g., from AIController.MoveTo)
-    //public void RegisterMove()
-    //{
-    //    moveCount++;
-    //}
+    public void RegisterMove()
+    {
+        moveCount++;
+    }
 
     //Call this regularly (e.g., Update or when sim time changes)
     public void UpdateCosts(int currentSimDay)
@@ -89,16 +115,15 @@ public class MOR_Runtime : MonoBehaviour
                 triggeredLogIndices.Add(i);
             }
         }
-        CalculateLossCost(currentSimTime);
-        CalculateDelayCost(currentSimTime);
-        CalculateMoveCost();
+        //CalculateLossCost(currentSimTime);
+        //CalculateDelayCost(currentSimTime);
+        //CalculateMoveCost();
 
     }
 
     private void CalculateLossCost(int currentSimDay)
     {
-        lossCost = 0;
-
+        if (IsDelivered) return;
         if (quayScoreDB == null)
         {
             Debug.LogWarning("QuayData DB not assigned!");
@@ -164,22 +189,20 @@ public class MOR_Runtime : MonoBehaviour
         QuayScoreGrade grade = operationEntry.quayScores[quayIndex];
         if (grade == QuayScoreGrade.C || grade == QuayScoreGrade.D || grade == QuayScoreGrade.E)
         {
+            if (IsDelivered) return;
+
             lossCost = 15000; // fixed cost per operation at low-priority quay
         }
-        else
-        {
-            lossCost = 0;
-        }
+       
     }
 
     private void CalculateDelayCost(int currentSimDay)
     {
+        // Delay is ONLY applied when the ship is delivered to sink (per your requirement).
+        if (IsDelivered) return;
+
+        // while not delivered we do not apply delay cost
         delayCost = 0;
-        if (currentSimDay > Data.Delivery_Date)
-        {
-            int delayedDays = currentSimDay - Data.Delivery_Date;
-            delayCost = delayedDays * 30000;
-        }
     }
 
     public void IncrementMoveCount()
@@ -189,6 +212,8 @@ public class MOR_Runtime : MonoBehaviour
     }
     private void CalculateMoveCost()
     {
+        if (IsDelivered) return;
+
         moveCost = moveCount * 30000;
     }
 }

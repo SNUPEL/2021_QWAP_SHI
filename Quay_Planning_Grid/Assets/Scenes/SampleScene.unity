@@ -822,7 +822,35 @@ MonoBehaviour:
   - {fileID: 1471226917}
   - {fileID: 213489078}
   - {fileID: 1643160284}
-  miniVisualizerImages: []
+  miniVisualizerImages:
+  - {fileID: 1595938098}
+  - {fileID: 799184589}
+  - {fileID: 142178834}
+  - {fileID: 1373116425}
+  - {fileID: 244194971}
+  - {fileID: 891405647}
+  - {fileID: 1993048069}
+  - {fileID: 1740809983}
+  - {fileID: 432412236}
+  - {fileID: 578200468}
+  - {fileID: 135787593}
+  - {fileID: 2047893240}
+  - {fileID: 1405969338}
+  - {fileID: 1144004706}
+  - {fileID: 1941066095}
+  - {fileID: 195909125}
+  - {fileID: 868562031}
+  - {fileID: 1983062359}
+  - {fileID: 401293257}
+  - {fileID: 1981247097}
+  - {fileID: 1818970758}
+  - {fileID: 54388695}
+  - {fileID: 1298589044}
+  - {fileID: 5197441}
+  - {fileID: 918948762}
+  - {fileID: 1521041884}
+  - {fileID: 538866314}
+  - {fileID: 1524165700}
   defaultMat: {fileID: 2100000, guid: 056641da60e554c118d7f1d62d1cc9db, type: 2}
 --- !u!4 &26476420
 Transform:
@@ -3000,7 +3028,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7175857329620914069, guid: 01e81c3229b0144a195dbd2d86167c39, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -950
+      value: -961
       objectReference: {fileID: 0}
     - target: {fileID: 7175857329620914069, guid: 01e81c3229b0144a195dbd2d86167c39, type: 3}
       propertyPath: m_LocalPosition.y
@@ -3008,7 +3036,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7175857329620914069, guid: 01e81c3229b0144a195dbd2d86167c39, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -12
+      value: -8
       objectReference: {fileID: 0}
     - target: {fileID: 7175857329620914069, guid: 01e81c3229b0144a195dbd2d86167c39, type: 3}
       propertyPath: m_LocalRotation.w
@@ -10345,7 +10373,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7175857329620914069, guid: 01e81c3229b0144a195dbd2d86167c39, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -950
+      value: -961
       objectReference: {fileID: 0}
     - target: {fileID: 7175857329620914069, guid: 01e81c3229b0144a195dbd2d86167c39, type: 3}
       propertyPath: m_LocalPosition.y
@@ -10353,7 +10381,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7175857329620914069, guid: 01e81c3229b0144a195dbd2d86167c39, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -12
+      value: -8
       objectReference: {fileID: 0}
     - target: {fileID: 7175857329620914069, guid: 01e81c3229b0144a195dbd2d86167c39, type: 3}
       propertyPath: m_LocalRotation.w
@@ -12956,9 +12984,9 @@ Transform:
   - {fileID: 2023941633}
   - {fileID: 2064220546}
   - {fileID: 2052607561}
+  - {fileID: 1191727293}
   - {fileID: 1382422381}
   - {fileID: 1903828839}
-  - {fileID: 1191727293}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &668327845
@@ -14694,7 +14722,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &742542476
 RectTransform:
   m_ObjectHideFlags: 0
@@ -19507,7 +19535,35 @@ MonoBehaviour:
   - {fileID: 1168174910}
   - {fileID: 1491860673}
   - {fileID: 1350979545}
-  miniVisualizerImages: []
+  miniVisualizerImages:
+  - {fileID: 749531714}
+  - {fileID: 1873360389}
+  - {fileID: 1974350156}
+  - {fileID: 1577136039}
+  - {fileID: 359983321}
+  - {fileID: 868998486}
+  - {fileID: 938184200}
+  - {fileID: 1623253851}
+  - {fileID: 1379966408}
+  - {fileID: 1066191785}
+  - {fileID: 1425865200}
+  - {fileID: 868286981}
+  - {fileID: 1698240274}
+  - {fileID: 1009854949}
+  - {fileID: 263296004}
+  - {fileID: 886787823}
+  - {fileID: 427253491}
+  - {fileID: 750522895}
+  - {fileID: 799969822}
+  - {fileID: 1105988900}
+  - {fileID: 1657754426}
+  - {fileID: 783227160}
+  - {fileID: 1967800495}
+  - {fileID: 1424938557}
+  - {fileID: 1277171983}
+  - {fileID: 445763128}
+  - {fileID: 1039772387}
+  - {fileID: 528809069}
   defaultMat: {fileID: 2100000, guid: 056641da60e554c118d7f1d62d1cc9db, type: 2}
 --- !u!224 &914312453 stripped
 RectTransform:
@@ -36186,24 +36242,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   infoPanel: {fileID: 755209320}
   infoPanelObject: {fileID: 742542475}
-  sptinfoPanel: {fileID: 0}
-  sptinfoPanelObject: {fileID: 0}
-  morinfoPanel: {fileID: 0}
-  morinfoPanelObject: {fileID: 0}
-  mwkrinfoPanel: {fileID: 0}
-  mwkrinfoPanelObject: {fileID: 0}
-  cam1: {fileID: 0}
-  cam2: {fileID: 0}
-  cam3: {fileID: 0}
-  cam4: {fileID: 0}
+  sptinfoPanel: {fileID: 308342607}
+  sptinfoPanelObject: {fileID: 931849826}
+  morinfoPanel: {fileID: 1191727294}
+  morinfoPanelObject: {fileID: 1017308366}
+  mwkrinfoPanel: {fileID: 679478385}
+  mwkrinfoPanelObject: {fileID: 522861229}
+  cam1: {fileID: 1975427432}
+  cam2: {fileID: 165502474}
+  cam3: {fileID: 2125706378}
+  cam4: {fileID: 3303827}
   simulationClock: {fileID: 1702610650}
   infoPanel_1: {fileID: 1980617573}
   currentSimDay: 0
   quayInfoPanelObject: {fileID: 215759731}
-  rlVisualizer: {fileID: 0}
-  sptVisualizer: {fileID: 0}
-  morVisualizer: {fileID: 0}
-  mwkrVisualizer: {fileID: 0}
+  rlVisualizer: {fileID: 1856920885}
+  sptVisualizer: {fileID: 911042171}
+  morVisualizer: {fileID: 2052607562}
+  mwkrVisualizer: {fileID: 26476419}
   highlightActive: 0
 --- !u!4 &1613613194
 Transform:
@@ -41100,7 +41156,35 @@ MonoBehaviour:
   - {fileID: 1220047164}
   - {fileID: 1979436118}
   - {fileID: 1872208887}
-  miniVisualizerImages: []
+  miniVisualizerImages:
+  - {fileID: 1273572349}
+  - {fileID: 890546955}
+  - {fileID: 1116187015}
+  - {fileID: 1275620747}
+  - {fileID: 1610210907}
+  - {fileID: 980390882}
+  - {fileID: 810036145}
+  - {fileID: 1008117703}
+  - {fileID: 18311945}
+  - {fileID: 636228029}
+  - {fileID: 151773094}
+  - {fileID: 1631036172}
+  - {fileID: 432282644}
+  - {fileID: 269313099}
+  - {fileID: 1266639484}
+  - {fileID: 433550198}
+  - {fileID: 503577296}
+  - {fileID: 372203389}
+  - {fileID: 1437189776}
+  - {fileID: 1196408635}
+  - {fileID: 1756575904}
+  - {fileID: 396517234}
+  - {fileID: 744113830}
+  - {fileID: 1702167786}
+  - {fileID: 1023995117}
+  - {fileID: 876671729}
+  - {fileID: 775938603}
+  - {fileID: 1468948274}
   defaultMat: {fileID: 2100000, guid: 056641da60e554c118d7f1d62d1cc9db, type: 2}
 --- !u!4 &1856920886
 Transform:
@@ -42084,7 +42168,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7175857329620914069, guid: 01e81c3229b0144a195dbd2d86167c39, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -950
+      value: -961
       objectReference: {fileID: 0}
     - target: {fileID: 7175857329620914069, guid: 01e81c3229b0144a195dbd2d86167c39, type: 3}
       propertyPath: m_LocalPosition.y
@@ -42092,7 +42176,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7175857329620914069, guid: 01e81c3229b0144a195dbd2d86167c39, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -12
+      value: -8
       objectReference: {fileID: 0}
     - target: {fileID: 7175857329620914069, guid: 01e81c3229b0144a195dbd2d86167c39, type: 3}
       propertyPath: m_LocalRotation.w
@@ -45988,7 +46072,35 @@ MonoBehaviour:
   - {fileID: 1884836910}
   - {fileID: 1683818177}
   defaultMat: {fileID: 2100000, guid: 056641da60e554c118d7f1d62d1cc9db, type: 2}
-  miniVisualizerImages: []
+  miniVisualizerImages:
+  - {fileID: 34439160}
+  - {fileID: 2072149789}
+  - {fileID: 738004003}
+  - {fileID: 1699521699}
+  - {fileID: 207066419}
+  - {fileID: 1690654985}
+  - {fileID: 664456636}
+  - {fileID: 670243910}
+  - {fileID: 389933976}
+  - {fileID: 1501467929}
+  - {fileID: 687367329}
+  - {fileID: 399924474}
+  - {fileID: 1875866833}
+  - {fileID: 1110741518}
+  - {fileID: 696502859}
+  - {fileID: 211251743}
+  - {fileID: 409601614}
+  - {fileID: 2124960705}
+  - {fileID: 1238241187}
+  - {fileID: 2130610977}
+  - {fileID: 921610988}
+  - {fileID: 182919717}
+  - {fileID: 871204827}
+  - {fileID: 960582858}
+  - {fileID: 2050691314}
+  - {fileID: 1233044400}
+  - {fileID: 384980505}
+  - {fileID: 623290135}
 --- !u!4 &2054287014 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7175857329620914069, guid: 01e81c3229b0144a195dbd2d86167c39, type: 3}
@@ -48159,7 +48271,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7175857329620914069, guid: 01e81c3229b0144a195dbd2d86167c39, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -11
+      value: -8
       objectReference: {fileID: 0}
     - target: {fileID: 7175857329620914069, guid: 01e81c3229b0144a195dbd2d86167c39, type: 3}
       propertyPath: m_LocalRotation.w

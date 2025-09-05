@@ -43,6 +43,8 @@ public class SPTInfoPanel : MonoBehaviour
         //nextOperationText.text = "Next Operation" +((currentIndex >= 0 && currentIndex < selectedShip.Data.Operation_Name.Count - 1)
         //    ? FormatOperation(selectedShip, currentIndex + 1)
         //    : "-");
+        selectedShip.UpdateCosts(currentSimDay);
+        UpdateCosts(selectedShip);
     }
 
     private int GetCurrentOperationIndex(SPT_ShipRuntime ship, int currentSimDay)
@@ -78,10 +80,21 @@ public class SPTInfoPanel : MonoBehaviour
 
     public void UpdateCosts(SPT_ShipRuntime ship)
     {
-        lossCostText.text = $"Loss: ${ship.lossCost:N0}";
-        delayCostText.text = $"Delay: ${ship.delayCost:N0}";
-        moveCostText.text = $"Move: ${ship.moveCost:N0}";
-        //totalCostText.text = $"Total Cost: ${ship.totalCost:N0}";
+        if (ship.IsDelivered)
+        {
+            // After delivery → show frozen values
+            lossCostText.text = $"Loss: ${ship.finalLossCost:N0}";
+            delayCostText.text = $"Delay: ${ship.finalDelayCost:N0}";
+            moveCostText.text = $"Move: ${ship.finalMoveCost:N0}";
+        }
+        else
+        {
+            // Before delivery → show current values
+            lossCostText.text = $"Loss: ${ship.lossCost:N0}";
+            delayCostText.text = $"Delay: ${ship.delayCost:N0}";
+            moveCostText.text = $"Move: ${ship.moveCost:N0}";
+        }
+        //totalCostText.text = $"Total: ${ship.TotalCost:N0}";
     }
     void Update()
     {

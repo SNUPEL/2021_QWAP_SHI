@@ -125,7 +125,7 @@ public class DashboardUI : MonoBehaviour
         SimulationController.Instance?.Play();
 
 
-        SimulationController.Instance.StartSimulation(FilePath);
+        //SimulationController.Instance.InstanceStartSimulation(FilePath);
     }
 
     public void OnPauseButtonClicked() => SimulationController.Instance?.PauseSimulation();
