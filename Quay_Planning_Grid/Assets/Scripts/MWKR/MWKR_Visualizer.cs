@@ -183,7 +183,45 @@ public class MWKR_Visualizer : MonoBehaviour
             // default fall back material
         }
     }
+    public void HighlightQuayInMiniVisualizer(string quayName)
+    {
+        if (string.IsNullOrWhiteSpace(quayName)) return;
 
+        int quayIndex = quayScoreDB.quayWallNames.FindIndex(
+            q => string.Equals(q.Trim(), quayName.Trim(), System.StringComparison.OrdinalIgnoreCase)
+        );
+        if (quayIndex < 0 || quayIndex >= miniVisualizerImages.Count) return;
+
+        // Reset all outlines first
+        for (int i = 0; i < miniVisualizerImages.Count; i++)
+        {
+            Outline outline = miniVisualizerImages[i].GetComponent<Outline>();
+            if (outline != null) outline.enabled = false;
+        }
+
+        // Add/enable outline for the selected quay
+        Image targetImg = miniVisualizerImages[quayIndex];
+        if (targetImg != null)
+        {
+            Outline outline = targetImg.GetComponent<Outline>();
+            if (outline == null) outline = targetImg.gameObject.AddComponent<Outline>();
+            outline.effectColor =new Color32(205, 92, 92, 255);
+            //Color.yellow;
+            //new Color32(0, 128, 128, 255); // Teal
+            outline.effectDistance = new Vector2(2, -2);
+            outline.enabled = true;
+        }
+    }
+
+    public void ClearQuayMiniHighlights()
+    {
+        foreach (var img in miniVisualizerImages)
+        {
+            if (img == null) continue;
+            Outline outline = img.GetComponent<Outline>();
+            if (outline != null) outline.enabled = false;
+        }
+    }
     public MWKR_Runtime FindShipAtQuay(string quayName)
     {
         if (string.IsNullOrWhiteSpace(quayName))

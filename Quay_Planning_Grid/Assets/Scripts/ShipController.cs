@@ -30,6 +30,8 @@ public class ShipController : MonoBehaviour
     public MOR_Visualizer morVisualizer;
     public MWKR_Visualizer mwkrVisualizer;
     public bool highlightActive = false;
+    private Renderer lastSelectedRenderer;
+    private Color originalShipColor;
 
     void Start()
     {
@@ -101,9 +103,19 @@ public class ShipController : MonoBehaviour
     void OnSShipSelected(SPT_ShipRuntime selectedShip)
     {
         Debug.Log("Selected SPT ship: " + selectedShip.name);
-        // Disable other visualizers, enable this one
-       
+// Reset previous highlight
+        if (lastSelectedRenderer != null)
+            lastSelectedRenderer.material.color = originalShipColor;
 
+        // Highlight new ship
+        Renderer rend = selectedShip.GetComponent<Renderer>();
+        if (rend != null)
+        {
+            lastSelectedRenderer = rend;
+            originalShipColor = rend.material.color;
+            rend.material.color = new Color32(205, 92, 92, 255); // Highlight color
+        }
+        // Disable other visualizers, enable this one
         if (sptVisualizer != null && sptinfoPanel != null)
         {
             sptVisualizer.ResetGradesOnly();
@@ -116,13 +128,31 @@ public class ShipController : MonoBehaviour
             sptinfoPanelObject.gameObject.SetActive(true);
             sptinfoPanel.UpdateShipInfo(selectedShip, currentSimDay);
         }
-
+        // Highlight the quay in the mini visualizer
+        string currentQuay = selectedShip.GetComponent<SPT_Controller>()?.currentTarget;
+        if (!string.IsNullOrEmpty(currentQuay))
+        {
+            sptVisualizer.HighlightQuayInMiniVisualizer(currentQuay);
+        }
         if (quayInfoPanelObject != null)
             quayInfoPanelObject.SetActive(false);
     }
     void OnRShipSelected(ShipRuntime selectedShip)
     {
         Debug.Log("Selected RL ship: " + selectedShip.name);
+
+        // Reset previous highlight
+        if (lastSelectedRenderer != null)
+            lastSelectedRenderer.material.color = originalShipColor;
+
+        // Highlight new ship
+        Renderer rend = selectedShip.GetComponent<Renderer>();
+        if (rend != null)
+        {
+            lastSelectedRenderer = rend;
+            originalShipColor = rend.material.color;
+            rend.material.color = new Color32(205, 92, 92, 255); // Indian Red
+        }
         // Disable other visualizers, enable this one
         if (rlVisualizer != null && infoPanel != null)
         {
@@ -135,15 +165,30 @@ public class ShipController : MonoBehaviour
             infoPanelObject.gameObject.SetActive(true);
             infoPanel.UpdateShipInfo(selectedShip, currentSimDay);
         }
-
+        // Highlight the quay in the mini visualizer
+        string currentQuay = selectedShip.GetComponent<AIController>()?.currentTarget;
+        if (!string.IsNullOrEmpty(currentQuay))
+        {
+            rlVisualizer.HighlightQuayInMiniVisualizer(currentQuay);
+        }
         if (quayInfoPanelObject != null)
             quayInfoPanelObject.SetActive(false);
     }
     void OnMShipSelected(MOR_Runtime selectedShip)
     {
         Debug.Log("Selected MOR ship: " + selectedShip.name);
+        // Reset previous highlight
+        if (lastSelectedRenderer != null)
+            lastSelectedRenderer.material.color = originalShipColor;
 
-
+        // Highlight new ship
+        Renderer rend = selectedShip.GetComponent<Renderer>();
+        if (rend != null)
+        {
+            lastSelectedRenderer = rend;
+            originalShipColor = rend.material.color;
+            rend.material.color = new Color32(205, 92, 92, 255); // Highlight color
+        }
         if (morVisualizer != null && morinfoPanel != null)
         {
             morVisualizer.ResetGradesOnly();
@@ -155,7 +200,12 @@ public class ShipController : MonoBehaviour
             morinfoPanelObject.gameObject.SetActive(true);
             morinfoPanel.UpdateShipInfo(selectedShip, currentSimDay);
         }
-
+        // Highlight the quay in the mini visualizer
+        string currentQuay = selectedShip.GetComponent<MOR_Controller>()?.currentTarget;
+        if (!string.IsNullOrEmpty(currentQuay))
+        {
+            morVisualizer.HighlightQuayInMiniVisualizer(currentQuay);
+        }
         if (quayInfoPanelObject != null)
             quayInfoPanelObject.SetActive(false);
     }
@@ -163,8 +213,19 @@ public class ShipController : MonoBehaviour
     void OnWShipSelected(MWKR_Runtime selectedShip)
     {
         Debug.Log("Selected MWKR ship: " + selectedShip.name);
-        // Disable other visualizers, enable this one
+        // Reset previous highlight
+        if (lastSelectedRenderer != null)
+            lastSelectedRenderer.material.color = originalShipColor;
 
+        // Highlight new ship
+        Renderer rend = selectedShip.GetComponent<Renderer>();
+        if (rend != null)
+        {
+            lastSelectedRenderer = rend;
+            originalShipColor = rend.material.color;
+            rend.material.color = new Color32(205, 92, 92, 255); // Highlight color
+        }
+        // Disable other visualizers, enable this one
         if (mwkrVisualizer != null && mwkrinfoPanel != null)
         {
             mwkrVisualizer.ResetGradesOnly();
@@ -176,7 +237,11 @@ public class ShipController : MonoBehaviour
             mwkrinfoPanelObject.gameObject.SetActive(true);
             mwkrinfoPanel.UpdateShipInfo(selectedShip, currentSimDay);
         }
-
+        string currentQuay = selectedShip.GetComponent<MWKR_Controller>()?.currentTarget;
+        if (!string.IsNullOrEmpty(currentQuay))
+        {
+            mwkrVisualizer.HighlightQuayInMiniVisualizer(currentQuay);
+        }
         if (quayInfoPanelObject != null)
             quayInfoPanelObject.SetActive(false);
     }
@@ -237,7 +302,10 @@ public class ShipController : MonoBehaviour
     void ClearUIAndVisualizer()
     {
         Debug.Log("Clicked outside of ship or quay — clearing visuals and UI.");
-
+        rlVisualizer?.ClearQuayMiniHighlights();
+        sptVisualizer?.ClearQuayMiniHighlights();
+        morVisualizer?.ClearQuayMiniHighlights();
+        mwkrVisualizer?.ClearQuayMiniHighlights();
         // Reset quay visuals
         //if (currentVisualizer != null)
         //    currentVisualizer.ResetGradesOnly();
