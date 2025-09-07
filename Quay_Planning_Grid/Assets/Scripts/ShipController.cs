@@ -102,8 +102,10 @@ public class ShipController : MonoBehaviour
 
     void OnSShipSelected(SPT_ShipRuntime selectedShip)
     {
+        ClearUIAndVisualizer();
         Debug.Log("Selected SPT ship: " + selectedShip.name);
-// Reset previous highlight
+
+        // Reset previous highlight
         if (lastSelectedRenderer != null)
             lastSelectedRenderer.material.color = originalShipColor;
 
@@ -139,6 +141,7 @@ public class ShipController : MonoBehaviour
     }
     void OnRShipSelected(ShipRuntime selectedShip)
     {
+        ClearUIAndVisualizer();
         Debug.Log("Selected RL ship: " + selectedShip.name);
 
         // Reset previous highlight
@@ -176,6 +179,7 @@ public class ShipController : MonoBehaviour
     }
     void OnMShipSelected(MOR_Runtime selectedShip)
     {
+        ClearUIAndVisualizer();
         Debug.Log("Selected MOR ship: " + selectedShip.name);
         // Reset previous highlight
         if (lastSelectedRenderer != null)
@@ -212,6 +216,7 @@ public class ShipController : MonoBehaviour
 
     void OnWShipSelected(MWKR_Runtime selectedShip)
     {
+        ClearUIAndVisualizer();
         Debug.Log("Selected MWKR ship: " + selectedShip.name);
         // Reset previous highlight
         if (lastSelectedRenderer != null)
@@ -263,15 +268,7 @@ public class ShipController : MonoBehaviour
         // Update info panel with whichever ship exists
         if (rlShip != null)
             infoPanel_1.UpdateQuayWallInfo(quayName, rlShip, currentSimDay);
-        // else if (sptShip != null)
-        //     infoPanel_1.UpdateQuayWallInfo(quayName, sptShip, currentSimDay);
-        // else if (morShip != null)
-        //     infoPanel_1.UpdateQuayWallInfo(quayName, morShip, currentSimDay);
-        // else if (mwkrShip != null)
-        //     infoPanel_1.UpdateQuayWallInfo(quayName, mwkrShip, currentSimDay);
-        // else
-        //     infoPanel_1.UpdateQuayWallInfo(quayName, null, currentSimDay); // no ship at quay
-
+       
         // Reset grades on all visualizers since UI is now showing the quay
         rlVisualizer?.ResetGradesOnly();
         sptVisualizer?.ResetGradesOnly();
@@ -306,16 +303,33 @@ public class ShipController : MonoBehaviour
         sptVisualizer?.ClearQuayMiniHighlights();
         morVisualizer?.ClearQuayMiniHighlights();
         mwkrVisualizer?.ClearQuayMiniHighlights();
-        // Reset quay visuals
-        //if (currentVisualizer != null)
-        //    currentVisualizer.ResetGradesOnly();
+
+        // Reset ship highlight
+        if (lastSelectedRenderer != null)
+        {
+            lastSelectedRenderer.material.color = originalShipColor;
+            lastSelectedRenderer = null; // clear reference
+        }
+
+        // Reset ship highlight
+        infoPanel?.ClearInfo();
+        sptinfoPanel?.ClearInfo();
+        morinfoPanel?.ClearInfo();
+        mwkrinfoPanel?.ClearInfo();
 
         // Hide both panels
         if (infoPanelObject != null)
             infoPanelObject.SetActive(false);
+        if (sptinfoPanelObject != null)
+            sptinfoPanelObject.SetActive(false);
+        if (morinfoPanelObject != null)
+            morinfoPanelObject.SetActive(false);
+        if (mwkrinfoPanelObject != null)
+            mwkrinfoPanelObject.SetActive(false);
 
+        // Hide quay panel
         if (quayInfoPanelObject != null)
             quayInfoPanelObject.SetActive(false);
     }
 
-    }
+}

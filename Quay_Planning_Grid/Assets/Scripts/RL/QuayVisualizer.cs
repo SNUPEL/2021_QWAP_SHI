@@ -52,12 +52,7 @@ public class QuayVisualizer : MonoBehaviour
         if (QuayInfoPanel.Instance != null && QuayInfoPanel.Instance.CurrentQuayIndex == quayIndex)
         {
             ShipRuntime ship = engaged ? FindShipAtQuay(quayScoreDB.quayWallNames[quayIndex]) : null;
-            /* 
-            QuayInfoPanel.Instance.UpdateQuayWallInfo(
-                quayScoreDB.quayWallNames[quayIndex],
-                ship,
-                SimulationClock.Instance.simulationTime
-            ); */
+          
         }
     }
 
@@ -208,8 +203,6 @@ public class QuayVisualizer : MonoBehaviour
             Outline outline = targetImg.GetComponent<Outline>();
             if (outline == null) outline = targetImg.gameObject.AddComponent<Outline>();
             outline.effectColor = new Color32(205, 92, 92, 255);
-            //Color.yellow;
-            //new Color32(0, 128, 128, 255); // Teal
             outline.effectDistance = new Vector2(2, -2);
             outline.enabled = true;
         }

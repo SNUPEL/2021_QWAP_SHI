@@ -65,11 +65,18 @@ public class DashboardUI : MonoBehaviour
         activeCam = cam;
         if (activeCam != null) activeCam.gameObject.SetActive(true);
     }
-    private void SetImageActive(GameObject image)
+    private void SetImageActive(GameObject panel)
     {
-        if (activeImage != null) activeImage.gameObject.SetActive(false);
-        activeImage = image;
-        if (activeImage != null) activeImage.gameObject.SetActive(true);
+        // deactivate all heuristic panels
+        RL.SetActive(false);
+        SPT.SetActive(false);
+        MOR.SetActive(false);
+        MWKR.SetActive(false);
+
+        // activate only the selected one
+        activeImage = panel;
+        if (activeImage != null)
+            activeImage.SetActive(true);
     }
     public void OnCam1Button()
     {

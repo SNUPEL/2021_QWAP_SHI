@@ -47,15 +47,13 @@ public class MWKR_Visualizer : MonoBehaviour
         isQuayEngaged[quayIndex] = engaged;
         // Re-apply whole visualization so we never accidentally overwrite correct visuals
         ApplyVisualization();
-        //UpdateQuayMaterial(quayIndex);
-
         // Refresh info panel if it is showing this quay
         if (QuayInfoPanel.Instance != null && QuayInfoPanel.Instance.CurrentQuayIndex == quayIndex)
         {
             MWKR_Runtime wship = engaged ? FindShipAtQuay(quayScoreDB.quayWallNames[quayIndex]) : null;
             /* QuayInfoPanel.Instance.UpdateQuayWallInfo(
                 quayScoreDB.quayWallNames[quayIndex],
-                sship,
+                wship,
                 SimulationClock.Instance.simulationTime */
             //);
         }
@@ -65,7 +63,6 @@ public class MWKR_Visualizer : MonoBehaviour
     {
         if (string.IsNullOrWhiteSpace(quayName))
         {
-            //Debug.LogWarning("SetQuayEngagement called with null or empty quayName");
             return;
         }
         // Optionally ignore special names like "Source"
@@ -206,8 +203,6 @@ public class MWKR_Visualizer : MonoBehaviour
             Outline outline = targetImg.GetComponent<Outline>();
             if (outline == null) outline = targetImg.gameObject.AddComponent<Outline>();
             outline.effectColor =new Color32(205, 92, 92, 255);
-            //Color.yellow;
-            //new Color32(0, 128, 128, 255); // Teal
             outline.effectDistance = new Vector2(2, -2);
             outline.enabled = true;
         }

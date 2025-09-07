@@ -11,8 +11,6 @@ public class MWKR_Controller : MonoBehaviour
 
     public string currentTarget = "";
     private string previousTarget = "";
-
-    //private QuayVisualizer quayVisualizer;  // drag & drop in Inspector
     [SerializeField] private MWKR_Visualizer mwkrVisualizer; // drag your SPT visualizer here
 
     private Transform gridOrigin1;     // Set this in Inspector near Sink
@@ -83,12 +81,7 @@ public class MWKR_Controller : MonoBehaviour
 
         // Update current target
         currentTarget = trimmedLocation;
-        //moveCount++;
-        //if (shipRuntime != null)
-        //{
-        //    shipRuntime.IncrementMoveCount();
-        //}
-
+        
         // If we were on a quay and are leaving it (oldTarget != currentTarget), free the old quay
 
         if (!string.IsNullOrWhiteSpace(oldTarget) && !oldTarget.Equals("Source", StringComparison.OrdinalIgnoreCase) && QuayInfoPanel.Instance != null)

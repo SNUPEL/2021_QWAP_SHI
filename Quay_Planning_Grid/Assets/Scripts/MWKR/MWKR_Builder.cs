@@ -123,9 +123,6 @@ public class MWKR_Builder : MonoBehaviour
         if (SimulationClock.Instance != null)
             SimulationClock.Instance.OnTimeChanged -= HandleTimeChanged;
         pendingShips.Clear();
-
-        //LoadAndSortShips();
-
         shipsToSpawn = 80;
     }
 }

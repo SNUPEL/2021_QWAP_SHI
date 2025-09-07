@@ -102,32 +102,17 @@ public class ShipRuntime : MonoBehaviour
             var log = Logs[i];
             if (log.Time <= currentSimTime && !triggeredLogIndices.Contains(i))
             {
-//                Debug.Log($"Checking log location (len={log.Location?.Length}): '{log.Location}'");
-
                 if (string.IsNullOrWhiteSpace(log.Location) || log.Location.Trim().Length == 0)
                 {
-//                    Debug.LogWarning($"Skipped empty or whitespace-only location at log index {i}");
                     triggeredLogIndices.Add(i);  // <--- Mark as triggered here
                     continue;
                 }
-
                 Debug.Log($"[T={log.Time}] {Data.Ship_Name}: Jump to {log.Location}");
-
                 controller.MoveTo(log.Location);
-
                 triggeredLogIndices.Add(i);
             }
         }
-        //if (IsDelivered)
-        //{
-        //    CalculateDelayCost(currentSimTime);
-        //    return;
-        //}
-
-        //CalculateLossCost(currentSimTime);
-        //CalculateMoveCost();
-
-        }
+     }
 
     public void CalculateLossCost(int currentSimDay)
     {
@@ -194,7 +179,6 @@ public class ShipRuntime : MonoBehaviour
         int quayIndex = quayScoreDB.quayWallNames.FindIndex(q => q.Trim().Equals(currentQuay.Trim(), StringComparison.OrdinalIgnoreCase));
         if (quayIndex < 0 || quayIndex >= operationEntry.quayScores.Count)
         {
-            //Debug.LogWarning($"Quay '{currentQuay}' not found or invalid index.");
             return;
         }
 

@@ -38,12 +38,7 @@ public class AIController : MonoBehaviour
         {
             Debug.LogError("QuayVisualizer.Instance is null! Make sure QuayVisualizer exists in the scene before ships are spawned.");
         }
-
-        // Fill only SPT walls
-        //quayVisualizer.AutoFillRenderers("RL_Waypoint");
-
         Transform sinkTransform = null;
-
         if (WPManager.Instance != null)
         {
             sinkTransform = WPManager.Instance.GetWaypointByName("Sink")?.transform;
@@ -87,14 +82,8 @@ public class AIController : MonoBehaviour
 
         // Update current target
         currentTarget = trimmedLocation;
-        //if (shipRuntime != null)
-        //{
-        //    shipRuntime.IncrementMoveCount();
-        //}
        
-
         // If we were on a quay and are leaving it (oldTarget != currentTarget), free the old quay
-
         if (!string.IsNullOrWhiteSpace(oldTarget) && !oldTarget.Equals("Source", StringComparison.OrdinalIgnoreCase) && QuayInfoPanel.Instance != null)
         {
             quayVisualizer.SetQuayEngagement(oldTarget, false);
@@ -115,12 +104,6 @@ public class AIController : MonoBehaviour
         // If going to Sink, free previous quay (if any), then deliver
         if (currentTarget.Equals("Sink", System.StringComparison.OrdinalIgnoreCase) && !hasBeenDelivered)
         {
-            //if (!string.IsNullOrEmpty(oldTarget) && IsQuayWall(oldTarget))
-            //{
-            //    int prevIdx = quayVisualizer.quayScoreDB.quayWallNames.IndexOf(oldTarget);
-            //    if (prevIdx >= 0)
-            //        quayVisualizer.SetQuayEngagement(prevIdx, false);
-            //}
             quayVisualizer.SetQuayEngagement(oldTarget, false);
 
             MoveShipToGrid();
@@ -183,7 +166,7 @@ public class AIController : MonoBehaviour
 
             // Example: map totalCost to a 0–1 range for gradient
             float minCost = 15000f;      // expected min total cost
-            float maxCost = 90000f; // expected max total cost
+            float maxCost = 120000f; // expected max total cost
             float t = Mathf.Clamp01((totalCost - minCost) / (maxCost - minCost));
 
             // Gradient from white (low cost) → black (high cost)

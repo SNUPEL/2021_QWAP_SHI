@@ -5,7 +5,7 @@ using TMPro;  // or UnityEngine.UI if you use regular UI text
 
 public class MORInfoPanel : MonoBehaviour
 {
-   public TMP_Text shipIdText;
+    public TMP_Text shipIdText;
     public TMP_Text shipTypeText;
     //public TMP_Text prevOperationText;
     public TMP_Text currentOperationText;
@@ -31,17 +31,10 @@ public class MORInfoPanel : MonoBehaviour
 
         // Find current, previous, and next operation indexes relative to currentSimDay
         int currentIndex = GetCurrentOperationIndex(selectedShip, currentSimDay);
-
-        // Previous operation or "-"
-        //prevOperationText.text = "Previous Operation: " + (currentIndex > 0 ? FormatOperation(selectedShip, currentIndex - 1): "-");
-
+        
         // Current operation or "-"
         currentOperationText.text = "Operation: " + (FormatOperation(selectedShip, currentIndex));
 
-        // Next operation or "-"
-        //nextOperationText.text = "Next Operation" +((currentIndex >= 0 && currentIndex < selectedShip.Data.Operation_Name.Count - 1)
-        //    ? FormatOperation(selectedShip, currentIndex + 1)
-        //    : "-");
         selectedShip.UpdateCosts(currentSimDay);
         UpdateCosts(selectedShip);
     }
@@ -120,5 +113,20 @@ public class MORInfoPanel : MonoBehaviour
 
         // Costs
         UpdateCosts(currentShip);
+    }
+    public void ClearInfo()
+    {
+        currentShip = null;
+        shipIdText.text = "Ship ID: ";
+        shipTypeText.text = "Ship Type: ";
+        //prevOperationText.text = "Previous Operation: -";
+        currentOperationText.text = "Operation: ";
+        //nextOperationText.text = "Next Operation: -";
+        percentCompleteText.text = "% of work complete: ";
+        daysToCompletionText.text = "Days to Completion: ";
+        lossCostText.text = "Loss: ";
+        delayCostText.text = "Delay: ";
+        moveCostText.text = "Move: ";
+        //totalCostText.text = "Total: -";
     }
 }

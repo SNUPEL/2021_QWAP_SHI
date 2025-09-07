@@ -30,16 +30,9 @@ public class ShipInfoPanel : MonoBehaviour
         // Find current, previous, and next operation indexes relative to currentSimDay
         int currentIndex = GetCurrentOperationIndex(selectedShip, currentSimDay);
 
-        // Previous operation or "-"
-        //prevOperationText.text = "Previous Operation: " + (currentIndex > 0 ? FormatOperation(selectedShip, currentIndex - 1): "-");
-
         // Current operation or "-"
         currentOperationText.text = "Operation: " + (FormatOperation(selectedShip, currentIndex));
 
-        // Next operation or "-"
-        //nextOperationText.text = "Next Operation" +((currentIndex >= 0 && currentIndex < selectedShip.Data.Operation_Name.Count - 1)
-        //    ? FormatOperation(selectedShip, currentIndex + 1)
-        //    : "-");
         selectedShip.UpdateCosts(currentSimDay);
         UpdateCosts(selectedShip);
 
@@ -120,5 +113,19 @@ public class ShipInfoPanel : MonoBehaviour
         // Costs
         UpdateCosts(currentShip);
     }
-    
+    public void ClearInfo()
+    {
+        shipIdText.text = "Ship ID: ";
+        shipTypeText.text = "Ship Type: ";
+        currentOperationText.text = "Operation: ";
+        percentCompleteText.text = "% of work complete: ";
+        daysToCompletionText.text = "Days to Completion: ";
+        lossCostText.text = "Loss: ";
+        delayCostText.text = "Delay: ";
+        moveCostText.text = "Move: ";
+        //totalCostText.text = "Total: -"; // if you bring it back
+
+        currentShip = null;
+        lastSimDay = -1;
+    }
 }
