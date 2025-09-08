@@ -211,6 +211,6 @@ public class ShipRuntime : MonoBehaviour
     {
         if (IsDelivered) return;  // Don't change anything after delivery
 
-        moveCost = moveCount * 15000;
+        moveCost = moveCount * 30000;
     }
 }

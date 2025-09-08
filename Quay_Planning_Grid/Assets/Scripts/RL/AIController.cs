@@ -108,6 +108,8 @@ public class AIController : MonoBehaviour
 
             MoveShipToGrid();
             hasBeenDelivered = true;
+            ShipRuntime ship = GetComponent<ShipRuntime>();
+            ship.IncrementMoveCount();
 
             var runtime = GetComponent<ShipRuntime>();
             if (runtime != null)
@@ -165,8 +167,8 @@ public class AIController : MonoBehaviour
             float totalCost = runtime.TotalCost;
 
             // Example: map totalCost to a 0–1 range for gradient
-            float minCost = 15000f;      // expected min total cost
-            float maxCost = 120000f; // expected max total cost
+            float minCost = 30000f;      // expected min total cost
+            float maxCost = 150000f; // expected max total cost
             float t = Mathf.Clamp01((totalCost - minCost) / (maxCost - minCost));
 
             // Gradient from white (low cost) → black (high cost)

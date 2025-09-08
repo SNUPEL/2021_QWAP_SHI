@@ -114,6 +114,8 @@ public class MOR_Controller : MonoBehaviour
         {
             
             morVisualizer.SetQuayEngagement(oldTarget, false);
+            MOR_Runtime mship = GetComponent<MOR_Runtime>();
+            mship.IncrementMoveCount();
 
             MoveShipToGrid();
             hasBeenDelivered = true;
@@ -171,8 +173,8 @@ public class MOR_Controller : MonoBehaviour
             float totalCost = runtime.TotalCost;
 
             // Example: map totalCost to a 0–1 range for gradient
-            float minCost = 15000f;      // expected min total cost
-            float maxCost = 90000f; // expected max total cost
+            float minCost = 30000f;      // expected min total cost
+            float maxCost = 150000f; // expected max total cost
             float t = Mathf.Clamp01((totalCost - minCost) / (maxCost - minCost));
 
             // Gradient from white (low cost) → black (high cost)

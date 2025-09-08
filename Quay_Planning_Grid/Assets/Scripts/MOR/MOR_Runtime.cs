@@ -115,10 +115,6 @@ public class MOR_Runtime : MonoBehaviour
                 triggeredLogIndices.Add(i);
             }
         }
-        //CalculateLossCost(currentSimTime);
-        //CalculateDelayCost(currentSimTime);
-        //CalculateMoveCost();
-
     }
 
     private void CalculateLossCost(int currentSimDay)
