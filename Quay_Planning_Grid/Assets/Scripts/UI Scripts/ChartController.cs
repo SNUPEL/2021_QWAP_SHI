@@ -36,10 +36,10 @@ public class ChartController : MonoBehaviour
     private Dictionary<int, Chart> PreferenceCost = new Dictionary<int, Chart>();
     private Dictionary<int, Chart> TotalCost = new Dictionary<int, Chart>();
 
-    private int index_RL = 7;
-    private int index_SPTMF = 10;
-    private int index_MORMF = 3;
-    private int index_MWKRMF = 6;
+    private int index_RL = 3;
+    private int index_SPTMF = 4;
+    private int index_MORMF = 1;
+    private int index_MWKRMF = 2;
 
 
     // Start is called before the first frame update
@@ -65,10 +65,10 @@ public class ChartController : MonoBehaviour
         TotalCost = ReadExcel(filePath_MoveLog);
     }
 
-    private Dictionary<int, Chart> ReadExcel(string filePath_DelayLog)
+    private Dictionary<int, Chart> ReadExcel(string filePath)
     {
         Dictionary<int, Chart> cost = new Dictionary<int, Chart>();
-        using (var stream = File.Open(filePath_DelayLog, FileMode.Open, FileAccess.Read))
+        using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read))
         {
             using (var reader = ExcelReaderFactory.CreateReader(stream))
             {
