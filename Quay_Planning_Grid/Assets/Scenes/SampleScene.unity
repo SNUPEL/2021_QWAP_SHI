@@ -26789,6 +26789,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   countdownUI: {fileID: 1356767050}
+  dashboardUI: {fileID: 1401182826}
   shipPanel: {fileID: 0}
   quayPanel: {fileID: 0}
 --- !u!4 &1167758545
@@ -32255,6 +32256,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   algorithmNameText: {fileID: 1931944332}
   textFilePath: {fileID: 929378079}
+  textFileFullPath: 
+  textFileFullDirectory: 
   textFileName: {fileID: 1250535042}
   textNumberOfQuays: {fileID: 1594037830}
   textNumberOfShips: {fileID: 136075586}

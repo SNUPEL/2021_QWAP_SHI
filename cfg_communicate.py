@@ -9,7 +9,7 @@ def get_cfg():
 
     parser.add_argument("--n_episode", type=int, default=10000, help="number of episodes")
     parser.add_argument("--load_model", type=int, default=0, help="whether to load the trained model")
-    parser.add_argument("--model_path", type=str, default="output/model/episode30.pt", help="model file path")
+    parser.add_argument("--model_path", type=str, default="C:/repos/2021_QWAP_SHI/output/model/episode30.pt", help="model file path")
     parser.add_argument("--param_path", type=str, default=None, help="hyper-parameter file path")
     parser.add_argument("--algorithm", type=str, default="ALL", help="test algorithm")
     parser.add_argument("--random_seed", type=int, default=42, help="random seed")

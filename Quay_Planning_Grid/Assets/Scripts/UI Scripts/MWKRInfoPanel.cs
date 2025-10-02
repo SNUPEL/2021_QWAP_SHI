@@ -74,14 +74,14 @@ public class MWKRInfoPanel : MonoBehaviour
     {
         if (ship.IsDelivered)
         {
-            // After delivery → show frozen values
+            // After delivery ??show frozen values
             lossCostText.text = $"Loss: ${ship.finalLossCost:N0}";
             delayCostText.text = $"Delay: ${ship.finalDelayCost:N0}";
             moveCostText.text = $"Move: ${ship.finalMoveCost:N0}";
         }
         else
         {
-            // Before delivery → show current values
+            // Before delivery ??show current values
             lossCostText.text = $"Loss: ${ship.lossCost:N0}";
             delayCostText.text = $"Delay: ${ship.delayCost:N0}";
             moveCostText.text = $"Move: ${ship.moveCost:N0}";

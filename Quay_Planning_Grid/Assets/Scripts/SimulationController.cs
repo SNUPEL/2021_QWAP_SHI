@@ -15,6 +15,7 @@ public class SimulationController : MonoBehaviour
 {
 
     [SerializeField] private SimulationCountdownUI countdownUI;
+    [SerializeField] private DashboardUI dashboardUI;
     [SerializeField] private GameObject shipPanel;
     [SerializeField] private GameObject quayPanel;
     public static SimulationController Instance;
@@ -117,10 +118,6 @@ public class SimulationController : MonoBehaviour
 
             process.WaitForExit();
 
-            UnityEngine.Debug.Log("Python Output: " + output);
-            if (!string.IsNullOrEmpty(error))
-                UnityEngine.Debug.LogError("Python Error: " + error);
-
         }
     }
 
@@ -147,10 +144,41 @@ public class SimulationController : MonoBehaviour
         // Manually force Day 0 ship check
         //ShipBuilder.Instance?.HandleTimeChanged(0);
         //SPT_Builder.Instance?.HandleTimeChanged(0);
+
+        // Agent를 Load하는 코드 추가 (시뮬레이션 돌리는 동안 대기)
+
+        RunAgent("C:\\repos\\2021_QWAP_SHI\\communicate.py");
+        
+
         ShipBuilder.Instance?.InitializeBuilder();
         SPT_Builder.Instance?.InitializeBuilder();
         MOR_Builder.Instance?.InitializeBuilder();
         MWKR_Builder.Instance?.InitializeBuilder();
+    }
+
+    private void RunAgent(string scriptPath)
+    {
+        string dataPath = string.Empty;
+        if (dashboardUI.textFileFullPath == string.Empty)
+            dataPath = $"C:\\repos\\2021_QWAP_SHI\\input\\test\\v2\\{dashboardUI.textNumberOfQuays.text}-{dashboardUI.textNumberOfShips.text}";
+        else
+            dataPath = dashboardUI.textFileFullDirectory;
+        string resPath = "C:\\repos\\2021_QWAP_SHI\\Quay_Planning_Grid\\Assets\\Data";
+        ProcessStartInfo psi = new ProcessStartInfo();
+        psi.FileName = @"C:\\Users\\User\\anaconda3\\python.exe";
+        //psi.FileName = "python";
+        psi.Arguments = $"\"{scriptPath}\" --data_path \"{dataPath}\" --res_path \"{resPath}\"";    
+        psi.UseShellExecute = false;
+        psi.RedirectStandardOutput = true;
+        psi.RedirectStandardError = true;
+        psi.CreateNoWindow = true;
+
+        using (Process process = Process.Start(psi))
+        {
+            string _output = process.StandardOutput.ReadToEnd();
+           string _error = process.StandardError.ReadToEnd();
+            process.WaitForExit();
+        }
     }
 
     public void PauseSimulation()

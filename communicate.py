@@ -8,7 +8,9 @@ from cfg_communicate import get_cfg
 from environment.env import *
 from agent.network import *
 from agent.heuristics import *
+from pathlib import Path
 import sys
+import argparse
 
 if __name__=="__main__":
     cfg = get_cfg()
@@ -26,8 +28,17 @@ if __name__=="__main__":
     PDR = ["SPT-MF", "MOR-MF", "MWKR-MF"]
 
     if len(sys.argv) > 1:
-        data_dir = sys.argv[1]  # TODO: Unity로 입력받도록 코드 구성
-        res_dir = sys.argv[2]  # TODO: Unity로 전송되도록 코드 구성
+
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--data_path", type=str, required=True, help="데이터 폴더(또는 파일) 경로")
+        parser.add_argument("--res_path", type=str, required=True, help="결과 저장 폴더 경로")
+        args = parser.parse_args()
+
+        # model_path = Path(args.model_path).resolve()
+        data_dir = args.data_path
+        res_dir = args.res_path
+        # data_dir = sys.argv[1]  # TODO: Unity로 입력받도록 코드 구성
+        # res_dir = sys.argv[2]  # TODO: Unity로 전송되도록 코드 구성
     else:
         data_dir = cfg.data_path
         res_dir = cfg.res_path
@@ -63,8 +74,8 @@ if __name__=="__main__":
             move_cost = 0.0
             loss_cost = 0.0
             computing_time = 0.0
-
-            env = QuayScheduling(data_dir + path, algorithm=name,
+            file_path = os.path.join(data_dir, path)
+            env = QuayScheduling(file_path, algorithm=name,
                                  state_encoding=encoding, restriction=restriction,
                                  record_events=True, device=torch.device('cpu'))
 
@@ -133,17 +144,17 @@ if __name__=="__main__":
         df_loss_cost[name] = list_loss_cost + [sum(list_loss_cost) / len(list_loss_cost)]
         df_computing_time[name] = list_computing_time + [sum(list_computing_time) / len(list_computing_time)]
 
+        log_df = env.get_logs()
+        log_df.to_csv(res_dir + f'\\log-{name}.csv', header=False, index=False, encoding="utf-8-sig")
+        # log_df.astype(int).to_csv(res_dir + f'\\log-{name}.csv', header=False, index=False, encoding="utf-8-sig")
 
-
-
-
-        writer = pd.ExcelWriter(res_dir + name + '_results.xlsx')
-        df_delay.to_excel(writer, sheet_name="delay")
-        df_move.to_excel(writer, sheet_name="move")
-        df_priority.to_excel(writer, sheet_name="priority")
-        df_delay_cost.to_excel(writer,sheet_name="delay_cost")
-        df_move_cost.to_excel(writer, sheet_name="move_cost")
-        df_loss_cost.to_excel(writer, sheet_name="loss_cost")
-        df_computing_time.to_excel(writer, sheet_name="computing_time")
-        env.get_logs().to_excel(writer, sheet_name="logs")
-        writer.close()
+        # writer = pd.ExcelWriter(res_dir + f'\\log-{name}.xlsx')
+        # df_delay.to_excel(writer, sheet_name="delay")
+        # df_move.to_excel(writer, sheet_name="move")
+        # df_priority.to_excel(writer, sheet_name="priority")
+        # df_delay_cost.to_excel(writer,sheet_name="delay_cost")
+        # df_move_cost.to_excel(writer, sheet_name="move_cost")
+        # df_loss_cost.to_excel(writer, sheet_name="loss_cost")
+        # df_computing_time.to_excel(writer, sheet_name="computing_time")
+        # env.get_logs().to_excel(writer, sheet_name="logs")
+        # writer.close()

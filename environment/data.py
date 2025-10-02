@@ -145,7 +145,9 @@ def get_load_graph(df_scenario, graph=False, filepath=None):
 
 
 if __name__ == "__main__":
-    file_path = "../input/configurations/v2/config (m=25).xlsx"
+    # file_path = "../input/configurations/v2/config (m=25).xlsx"
+
+    file_path = "../input/configurations/v1/config (m=28).xlsx"
 
     # # validation data generation
     # n_ships = 80
@@ -168,7 +170,7 @@ if __name__ == "__main__":
     # test data generation
     for n_ships in [60, 70, 80, 90, 100]:
         data_src = DataGenerator(n_ships, file_path)
-        test_dir = "../input/test/v2/25-%s/" % str(n_ships)
+        test_dir = "../input/test/v2/28-%s/" % str(n_ships)
 
         if not os.path.exists(test_dir):
             os.makedirs(test_dir)

@@ -20,6 +20,8 @@ public class DashboardUI : MonoBehaviour
     //public SPT_ScheduleManager SPTScheduleManager;
     public TMP_Text algorithmNameText;
     public TextMeshProUGUI textFilePath;
+    public string textFileFullPath;
+    public string textFileFullDirectory;
     public TextMeshProUGUI textFileName;
     public TextMeshProUGUI textNumberOfQuays;
     public TextMeshProUGUI textNumberOfShips;
@@ -160,7 +162,8 @@ public class DashboardUI : MonoBehaviour
                 DirectoryInfo dir = new DirectoryInfo(Path.GetDirectoryName(ofd.FileName));
                 string dir1 = dir?.Name;
                 string dir2 = dir?.Parent?.Name;
-
+                textFileFullPath = Path.GetFullPath(fileName);
+                textFileFullDirectory = dir.FullName;
                 if (!string.IsNullOrEmpty(dir2))
                     textFilePath.text = $"{dir2}/{dir1}/{fileName}";
                 if (!string.IsNullOrEmpty(dir1))
@@ -183,6 +186,8 @@ public class DashboardUI : MonoBehaviour
         ui.SelectedNumberOfShips = (int)ui.NumberOfShips.value;
         textFilePath.text = "> No file selected";
         textFileName.text = "-";
+        textFileFullPath = string.Empty;
+        textFileFullDirectory = string.Empty;
         FilePath = string.Empty;
     }
 

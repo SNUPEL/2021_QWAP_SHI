@@ -4,6 +4,8 @@ using System.IO;
 using UnityEngine;
 using UnityEditor;
 using System;
+using System.Globalization;
+using Unity.VisualScripting.Antlr3.Runtime;
 
 public class Simulation_Data : MonoBehaviour
 {
@@ -44,7 +46,11 @@ public class Simulation_Data : MonoBehaviour
             }
 
             SimulationData log = ScriptableObject.CreateInstance<SimulationData>();
-            log.Time = int.Parse(splitData[0]);
+            if (float.TryParse(splitData[0], NumberStyles.Float, CultureInfo.InvariantCulture, out float f))
+            {
+                log.Time = (int)f; // ÇÊ¿äÇÏ´Ù¸é Mathf.RoundToInt(f) »ç¿ë
+            }
+            //log.Time = int.Parse(splitData[0]);
             log.Location = splitData[1];
             log.Ship_Index = splitData[2];
             log.Operation = splitData[3];
@@ -67,7 +73,7 @@ public class Simulation_Data : MonoBehaviour
         foreach (var log in alllogs)
         {
             string logID = NormalizeShipID(log.Ship_Index);
-//            Debug.Log($"Comparing log.Ship_Index = {log.Ship_Index} â†’ {logID}");
+//            Debug.Log($"Comparing log.Ship_Index = {log.Ship_Index} ??{logID}");
             if (logID == normalizedIndex)
             {
                 matching.Add(log);

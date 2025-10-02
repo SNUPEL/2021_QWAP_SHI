@@ -145,7 +145,12 @@ public class UserInputPanelUI : MonoBehaviour,
     {
         if (textNumberOfShips != null)
         {
-            textNumberOfShips.text = value.ToString("F0");
+            // 10 단위로 반올림
+            float steppedValue = Mathf.Round(value / 10f) * 10f;
+
+            // 슬라이더 값을 강제로 갱신
+            NumberOfShips.SetValueWithoutNotify(steppedValue);
+            textNumberOfShips.text = steppedValue.ToString("F0");
         }
     }
 }
