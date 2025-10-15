@@ -233,3 +233,10 @@ Quay_Planning_Grid/[Aa]ssets/Unity.VisualScripting.Generated/VisualScripting.Cor
 
 # Auto-generated scenes by play mode tests
 Quay_Planning_Grid/[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+
+
+Quay_Planning_Grid/exe/*
+Quay_Planning_Grid/qwap_env
+*.xlsx
+*.csv
+*.zip

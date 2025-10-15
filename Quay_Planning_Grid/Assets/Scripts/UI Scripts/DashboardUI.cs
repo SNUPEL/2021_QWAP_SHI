@@ -4,8 +4,9 @@ using UnityEngine;
 using TMPro;
 using System.IO;
 using UnityEngine.UI;
-
-#if UNITY_EDITOR_WIN
+using UnityEngine.UIElements;
+using System;
+#if !UNITY_EDITOR_OSX
 using System.Windows.Forms;
 #endif
 public enum SimulationMode { RL, SPT, MOR, MWKR }
@@ -25,6 +26,7 @@ public class DashboardUI : MonoBehaviour
     public TextMeshProUGUI textFileName;
     public TextMeshProUGUI textNumberOfQuays;
     public TextMeshProUGUI textNumberOfShips;
+    public UnityEngine.UI.Button runSimulationButton;
 
     private string FilePath = string.Empty;
 
@@ -59,7 +61,7 @@ public class DashboardUI : MonoBehaviour
         UpdateAlgorithmText("RL");
         SetImageActive(RL);
         CurrentMode = SimulationMode.RL;
-
+        runSimulationButton.interactable = false;
     }
     private void SetActiveCamera(Camera cam)
     {
@@ -130,11 +132,7 @@ public class DashboardUI : MonoBehaviour
     public void OnRunSimulationClicked()
     {
         SimulationController.Instance?.ResetSimulation();
-
         SimulationController.Instance?.Play();
-
-
-        //SimulationController.Instance.InstanceStartSimulation(FilePath);
     }
 
     public void OnPauseButtonClicked() => SimulationController.Instance?.PauseSimulation();
@@ -150,27 +148,36 @@ public class DashboardUI : MonoBehaviour
     public void OnTypeBClicked()
     {
         SimulationController.Instance?.ResetSimulation();
-#if UNITY_EDITOR_WIN
-        using (OpenFileDialog ofd = new OpenFileDialog())
+#if !UNITY_EDITOR_OSX
+        try
         {
-            ofd.Filter = "All Files (*.*)|*.*";
-            ofd.Title = "Select a file";
-
-            if (ofd.ShowDialog() == DialogResult.OK)
+            using (OpenFileDialog ofd = new OpenFileDialog())
             {
-                string fileName = Path.GetFileName(ofd.FileName);
-                DirectoryInfo dir = new DirectoryInfo(Path.GetDirectoryName(ofd.FileName));
-                string dir1 = dir?.Name;
-                string dir2 = dir?.Parent?.Name;
-                textFileFullPath = Path.GetFullPath(fileName);
-                textFileFullDirectory = dir.FullName;
-                if (!string.IsNullOrEmpty(dir2))
-                    textFilePath.text = $"{dir2}/{dir1}/{fileName}";
-                if (!string.IsNullOrEmpty(dir1))
-                    textFilePath.text = $"{dir1}/{fileName}";
-                textFileName.text = Path.GetFileNameWithoutExtension(ofd.FileName);
-                FilePath = ofd.FileName;
+                ofd.Filter = "All Files (*.*)|*.*";
+                ofd.Title = "Select a file";
+
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    string fileName = Path.GetFileName(ofd.FileName);
+                    DirectoryInfo dir = new DirectoryInfo(Path.GetDirectoryName(ofd.FileName));
+                    string dir1 = dir?.Name;
+                    string dir2 = dir?.Parent?.Name;
+                    textFileFullPath = ofd.FileName;
+                    textFileFullDirectory = dir.FullName;
+                    if (!string.IsNullOrEmpty(dir2))
+                        textFilePath.text = $"{dir2}/{dir1}/{fileName}";
+                    if (!string.IsNullOrEmpty(dir1))
+                        textFilePath.text = $"{dir1}/{fileName}";
+                    textFileName.text = Path.GetFileNameWithoutExtension(ofd.FileName);
+                    this.textNumberOfShips.text = "-";
+                    FilePath = ofd.FileName;
+                    runSimulationButton.interactable = true;
+                    SimulationController.Instance.mSelectedDataSource = SourceType.FindData;
+                }
             }
+        } catch (Exception e)
+        {
+            SimulationController.Instance.SendError(e.Message);
         }
 #endif
     }
@@ -181,6 +188,7 @@ public class DashboardUI : MonoBehaviour
 
     public void OnUserInputPanelOkButtonClicked(UserInputPanelUI ui)
     {
+        SimulationController.Instance.mSelectedDataSource = SourceType.GenerateData;
         this.textNumberOfQuays.text = ui.textNumberOfWalls.text;
         this.textNumberOfShips.text = ui.textNumberOfShips.text;
         ui.SelectedNumberOfShips = (int)ui.NumberOfShips.value;
@@ -189,6 +197,7 @@ public class DashboardUI : MonoBehaviour
         textFileFullPath = string.Empty;
         textFileFullDirectory = string.Empty;
         FilePath = string.Empty;
+        runSimulationButton.interactable = true;
     }
 
 }

@@ -4,21 +4,29 @@ using UnityEngine;
 using System;
 using System.Diagnostics;
 using System.Text;
-
-
-
+using System.IO;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 public class SimulationController : MonoBehaviour
 {
-
     [SerializeField] private SimulationCountdownUI countdownUI;
     [SerializeField] private DashboardUI dashboardUI;
+    [SerializeField] private ChartController chartController;
     [SerializeField] private GameObject shipPanel;
     [SerializeField] private GameObject quayPanel;
+    [SerializeField] private UserSettingPanelUI userSettingPanelUI;
+    [SerializeField] private ErrorPanelUI errorPanelUI;
+
     public static SimulationController Instance;
+    public SourceType mSelectedDataSource = SourceType.None;
+    private string outputDirectory;
+
+    public string mBaseDirectory = string.Empty;
+    public string mModelPath = string.Empty;
+    public string mDataPath = string.Empty;
+    public string mResultPath = string.Empty;
 
     private void Awake()
     {
@@ -92,33 +100,12 @@ public class SimulationController : MonoBehaviour
         UnityEngine.Debug.Log("Simulation state reset complete.");
     }
 
-    public void StartSimulation(string filePath)
+    private void Start()
     {
-        string _pythonScriptPath = "C:\\repos\\2021_QWAP_SHI\\communicate.py";
-        string _args = "";
-        ProcessStartInfo psi = new ProcessStartInfo
-        {
-            FileName = "C:\\Users\\User\\anaconda3\\python.exe",
-            Arguments = $"\"{_pythonScriptPath}\" {_args}",
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false,
-            CreateNoWindow = true,
-            StandardOutputEncoding = Encoding.UTF8,
-            StandardErrorEncoding = Encoding.UTF8
-        };
-
-        using (Process process = new Process())
-        {
-            process.StartInfo = psi;
-            process.Start();
-
-            string output = process.StandardOutput.ReadToEnd();
-            string error = process.StandardError.ReadToEnd();
-
-            process.WaitForExit();
-
-        }
+        mBaseDirectory = PlayerPrefs.GetString(userSettingPanelUI.mBaseDirectoryKey);
+        mModelPath = PlayerPrefs.GetString(userSettingPanelUI.mModelPathKey);
+        mDataPath = PlayerPrefs.GetString(userSettingPanelUI.mDataDirectoryKey);
+        mResultPath = PlayerPrefs.GetString(userSettingPanelUI.mResultDirectoryKey);
     }
 
     public void Play()
@@ -145,29 +132,47 @@ public class SimulationController : MonoBehaviour
         //ShipBuilder.Instance?.HandleTimeChanged(0);
         //SPT_Builder.Instance?.HandleTimeChanged(0);
 
-        // Agent를 Load하는 코드 추가 (시뮬레이션 돌리는 동안 대기)
+        try
+        {
+            RunAgent();
 
-        RunAgent("C:\\repos\\2021_QWAP_SHI\\communicate.py");
+            ShipBuilder.Instance?.InitializeBuilder();
+            SPT_Builder.Instance?.InitializeBuilder();
+            MOR_Builder.Instance?.InitializeBuilder();
+            MWKR_Builder.Instance?.InitializeBuilder();
+
+            chartController.RunChart(mBaseDirectory);
+        } catch (Exception e)
+        {
+            SendError(e.Message);
+        }
         
-
-        ShipBuilder.Instance?.InitializeBuilder();
-        SPT_Builder.Instance?.InitializeBuilder();
-        MOR_Builder.Instance?.InitializeBuilder();
-        MWKR_Builder.Instance?.InitializeBuilder();
     }
 
-    private void RunAgent(string scriptPath)
+    private void RunAgent()
     {
+        string baseDir = mBaseDirectory;
+        string parentDir = Directory.GetParent(baseDir).FullName;
+        string modelPath = mModelPath;
         string dataPath = string.Empty;
-        if (dashboardUI.textFileFullPath == string.Empty)
-            dataPath = $"C:\\repos\\2021_QWAP_SHI\\input\\test\\v2\\{dashboardUI.textNumberOfQuays.text}-{dashboardUI.textNumberOfShips.text}";
+        if (mSelectedDataSource == SourceType.GenerateData)
+        {
+            GenerateData(baseDir, dashboardUI.textNumberOfShips.text);
+            dataPath = $"{mDataPath}\\{dashboardUI.textNumberOfQuays.text}-{dashboardUI.textNumberOfShips.text}\\instance-1.xlsx";
+        }
         else
-            dataPath = dashboardUI.textFileFullDirectory;
-        string resPath = "C:\\repos\\2021_QWAP_SHI\\Quay_Planning_Grid\\Assets\\Data";
+            dataPath = dashboardUI.textFileFullPath;
+        string resPath = mResultPath;
+        string pythonScript = $"{parentDir}\\communicate.py";
+
+        SendError("Data Path: " + dataPath);
+        SendError("Result Path: " + resPath);
+        SendError("Model Path: " + modelPath);
+        SendError("Base Directory: " + baseDir);
+
         ProcessStartInfo psi = new ProcessStartInfo();
-        psi.FileName = @"C:\\Users\\User\\anaconda3\\python.exe";
-        //psi.FileName = "python";
-        psi.Arguments = $"\"{scriptPath}\" --data_path \"{dataPath}\" --res_path \"{resPath}\"";    
+        psi.FileName = Path.Combine(baseDir, "qwap_env", "python.exe");
+        psi.Arguments = $"{pythonScript} --data_path \"{dataPath}\" --res_path \"{resPath}\" --model_path \"{modelPath}\"";
         psi.UseShellExecute = false;
         psi.RedirectStandardOutput = true;
         psi.RedirectStandardError = true;
@@ -176,7 +181,32 @@ public class SimulationController : MonoBehaviour
         using (Process process = Process.Start(psi))
         {
             string _output = process.StandardOutput.ReadToEnd();
-           string _error = process.StandardError.ReadToEnd();
+            string _error = process.StandardError.ReadToEnd();
+            UnityEngine.Debug.Log(_error);
+            process.WaitForExit();
+        }
+    }
+
+    private void GenerateData(string baseDir, string n_ships)
+    {
+        string configPath = $"{baseDir}\\input\\configurations\\v1\\config (m=28).xlsx";
+        string testDir = $"{baseDir}\\input\\28-{n_ships}";
+        string parentDir = Directory.GetParent(baseDir).FullName;
+        string pythonScript = $"{parentDir}\\data_communicate.py";
+
+        ProcessStartInfo psi = new ProcessStartInfo();
+        psi.FileName = Path.Combine(baseDir, "qwap_env", "python.exe");
+        psi.Arguments = $"{pythonScript} --n_ships \"{n_ships}\" --test_dir \"{testDir}\" --config_path \"{configPath}\"";
+        psi.UseShellExecute = false;
+        psi.RedirectStandardOutput = true;
+        psi.RedirectStandardError = true;
+        psi.CreateNoWindow = true;
+
+        using (Process process = Process.Start(psi))
+        {
+            string output = process.StandardOutput.ReadToEnd();
+            string error = process.StandardError.ReadToEnd();
+            UnityEngine.Debug.Log(error);
             process.WaitForExit();
         }
     }
@@ -203,5 +233,11 @@ public class SimulationController : MonoBehaviour
         // Recalculate offset to keep clock accurate after resume
         SimulationClock.Instance._startTime = Time.time - SimulationClock.Instance.simulationTime;
         SimulationClock.Instance.simulationStarted = true;
+    }
+
+    public void SendError(string exceptionMessage)
+    {
+        errorPanelUI.gameObject.SetActive(true);
+        errorPanelUI.setMessage(exceptionMessage);
     }
 }

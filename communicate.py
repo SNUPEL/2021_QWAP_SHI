@@ -6,12 +6,10 @@ from collections import defaultdict
 import torch
 import pandas as pd
 
-from agent.ppo import Agent
 from cfg_communicate import get_cfg
 from environment.env import *
 from agent.network import *
 from agent.heuristics import *
-from pathlib import Path
 import sys
 import argparse
 
@@ -25,12 +23,25 @@ class CumulativeLogGenerator:
             "RL",
             "SPT-MF"
         ]
-        self.instance_path = 'input/test/v2/28-70/instance-1.xlsx'
+        self.instance_path = str
         self.log_path = dict()
-        self.log_path['MOR-MF'] = 'Quay_Planning_Grid/Assets/Data/log-MOR-MF.xlsx'
-        self.log_path['RL'] = 'Quay_Planning_Grid/Assets/Data/log-RL.xlsx'
-        self.log_path['MWKR-MF'] = 'Quay_Planning_Grid/Assets/Data/log-MWKR-MF.xlsx'
-        self.log_path['SPT-MF'] = 'Quay_Planning_Grid/Assets/Data/log-SPT-MF.xlsx'
+
+    def read_log(self, data_path, res_dir):
+        # TODO instance의 값을 상대 경로, 혹은 data_path로 변경할 것
+        # data_path는 instance-1.xlsx의 경로
+        # res_dir는 결과 파일의 디렉토리 파일을 말함
+        self.instance_path = data_path
+
+        # TODO: res 폴더로 변경할 것
+        # self.log_path['MOR-MF'] = 'Quay_Planning_Grid/Assets/Data/log-MOR-MF.xlsx'
+        # self.log_path['RL'] = 'Quay_Planning_Grid/Assets/Data/log-RL.xlsx'
+        # self.log_path['MWKR-MF'] = 'Quay_Planning_Grid/Assets/Data/log-MWKR-MF.xlsx'
+        # self.log_path['SPT-MF'] = 'Quay_Planning_Grid/Assets/Data/log-SPT-MF.xlsx'
+        self.log_path['MOR-MF'] = f'{res_dir}\\log-MOR-MF.xlsx'
+        self.log_path['RL'] = f'{res_dir}\\log-RL.xlsx'
+        self.log_path['MWKR-MF'] = f'{res_dir}\\log-MWKR-MF.xlsx'
+        self.log_path['SPT-MF'] = f'{res_dir}\\log-SPT-MF.xlsx'
+
         # log_path 안의 모든 파일로부터 Log 객체 생성
         self.logs = {}
         for key, path in self.log_path.items():
@@ -41,9 +52,7 @@ class CumulativeLogGenerator:
 
         print("파일을 읽어들였습니다.")
 
-
-    def _generate_cost_log(self, move_log_path, delay_log_path, priority_log_path):
-
+    def _generate_cost_log(self, res_path, move_log_path, delay_log_path, priority_log_path):
         # 1) 기존 로그 로드 (index='time')
         move_df = pd.read_excel(move_log_path, index_col=0)
         delay_df = pd.read_excel(delay_log_path, index_col=0)
@@ -69,7 +78,7 @@ class CumulativeLogGenerator:
         cost_df.index.name = "time"
 
         # 5) 저장
-        cost_df.to_excel("CostLog.xlsx")
+        cost_df.to_excel(f"{res_path}\\CostLog.xlsx")
 
         print("Saved: CostLog.xlsx")
 
@@ -130,7 +139,7 @@ class CumulativeLogGenerator:
         df.index.name = "time"
         return df
 
-    def save_logs(self):
+    def save_logs(self, res_path):
         # 1) delay/priority 필요 시 생성
         self.ensure_delay_priority(self.logs, self.instance_path)
 
@@ -138,14 +147,16 @@ class CumulativeLogGenerator:
         move_df = self.build_log_matrix(self.logs, self.desired_keys, "move_timelog")
         delay_df = self.build_log_matrix(self.logs, self.desired_keys, "delay_timelog")
         priority_df = self.build_log_matrix(self.logs, self.desired_keys, "priority_timelog")
+        reversed_priority_df = priority_df * -1
 
         # 3) 엑셀 저장
-        move_df.to_excel("MoveLog.xlsx")
-        delay_df.to_excel("DelayLog.xlsx")
-        priority_df.to_excel("PriorityLog.xlsx")
+        move_df.to_excel(f"{res_path}\\MoveLog.xlsx")
+        delay_df.to_excel(f"{res_path}\\DelayLog.xlsx")
+        priority_df.to_excel(f"{res_path}\\PriorityLog.xlsx")
+        reversed_priority_df.to_excel(f"{res_path}\\PriorityLogReverse.xlsx")
 
-        print("Saved: MoveLog.xlsx, DelayLog.xlsx, PriorityLog.xlsx")
-        self._generate_cost_log("MoveLog.xlsx", "DelayLog.xlsx", "PriorityLog.xlsx")
+        print("Saved: MoveLog.xlsx, DelayLog.xlsx, PriorityLog.xlsx, PriorityLogReverse.xlsx")
+        self._generate_cost_log(res_path, f"{res_path}\\MoveLog.xlsx", f"{res_path}\\DelayLog.xlsx", f"{res_path}\\PriorityLog.xlsx")
 
 
 class Log:
@@ -167,6 +178,7 @@ class Log:
         self.move_timelog = {}
         self.delay_timelog = {}
         self.priority_timelog = {}
+        self.reversed_priority_timelog = {}
         self.maxtime = 0
 
         # 추가 필드
@@ -454,11 +466,9 @@ class Log:
         self.priority_timelog = priority_timelog
 
 class AgentCommunicator():
-    def __init__(self):
-        cfg = get_cfg()
+    def __init__(self, data_path, res_path, model_path):
 
-        model_path = cfg.model_path
-        param_path = cfg.param_path
+        cfg = get_cfg()
 
         use_gnn = bool(cfg.use_gnn)
         use_added_info = bool(cfg.use_added_info)
@@ -470,16 +480,8 @@ class AgentCommunicator():
         PDR = ["SPT-MF", "MOR-MF", "MWKR-MF"]
 
         if len(sys.argv) > 1:
-            parser = argparse.ArgumentParser()
-            parser.add_argument("--data_path", type=str, required=True, help="데이터 폴더(또는 파일) 경로")
-            parser.add_argument("--res_path", type=str, required=True, help="결과 저장 폴더 경로")
-            args = parser.parse_args()
-
-            # model_path = Path(args.model_path).resolve()
-            data_dir = args.data_path
-            res_dir = args.res_path
-            # data_dir = sys.argv[1]  # TODO: Unity로 입력받도록 코드 구성
-            # res_dir = sys.argv[2]  # TODO: Unity로 전송되도록 코드 구성
+            data_dir = os.path.dirname(data_path)
+            res_dir = res_path
         else:
             data_dir = cfg.data_path
             res_dir = cfg.res_path
@@ -588,22 +590,20 @@ class AgentCommunicator():
             log_df = env.get_logs()
             log_df.to_csv(res_dir + f'\\log-{name}.csv', header=False, index=False, encoding="utf-8-sig")
             writer = pd.ExcelWriter(res_dir + f'\\log-{name}.xlsx')
-            # df_delay.to_excel(writer, sheet_name="delay")
-            # df_move.to_excel(writer, sheet_name="move")
-            # df_priority.to_excel(writer, sheet_name="priority")
-            # df_delay_cost.to_excel(writer,sheet_name="delay_cost")
-            # df_move_cost.to_excel(writer, sheet_name="move_cost")
-            # df_loss_cost.to_excel(writer, sheet_name="loss_cost")
-            # df_computing_time.to_excel(writer, sheet_name="computing_time")
             env.get_logs().to_excel(writer, sheet_name="logs")
             writer.close()
 
 if __name__=="__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--data_path", type=str, required=True)
+    parser.add_argument("--res_path", type=str, required=True)
+    parser.add_argument("--model_path", type=str, required=True)
 
-    # agentcommunicator = AgentCommunicator()
-
+    args = parser.parse_args()
+    agentcommunicator = AgentCommunicator(args.data_path, args.res_path, args.model_path)
     cumulativeLogGenerator = CumulativeLogGenerator()
-    cumulativeLogGenerator.save_logs()
+    cumulativeLogGenerator.read_log(args.data_path, args.res_path)
+    cumulativeLogGenerator.save_logs(args.res_path)
 
 
 

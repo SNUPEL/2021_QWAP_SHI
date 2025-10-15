@@ -21,7 +21,12 @@ public class Simulation_Data : MonoBehaviour
 
     public void LoadSimulationLogs(string fileName)
     {
+#if UNITY_EDITOR_OSX
         string fullPath = Path.Combine(Application.dataPath, "Data", fileName);
+#else
+        string fullPath = $"{SimulationController.Instance.mResultPath}\\{fileName}";
+#endif
+        SimulationController.Instance.SendError("Full Path: " + fullPath);
         Debug.Log("Looking for CSV at: " + fullPath);
 
         if (!File.Exists(fullPath))

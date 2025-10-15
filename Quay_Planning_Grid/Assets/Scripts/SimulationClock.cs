@@ -25,7 +25,7 @@ public class SimulationClock : MonoBehaviour
     void Start()
     {
         _startTime = 0;
-        simulationStarted = true;
+        simulationStarted = false;
     }
     void Awake()
     {

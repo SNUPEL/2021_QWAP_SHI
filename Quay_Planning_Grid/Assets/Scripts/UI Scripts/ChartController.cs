@@ -18,10 +18,6 @@ public class Chart
 public class ChartController : MonoBehaviour
 {
     public GraphChart[] charts;
-    //public GraphChart[] chartMove;
-    //public GraphChart chartDelay;
-    //public GraphChart chartPreference;
-    //public GraphChart chartTotalCost;
 
     private string rl = "RL";
     private string sptmf = "SPT MF";
@@ -40,10 +36,9 @@ public class ChartController : MonoBehaviour
     private int index_SPTMF = 4;
     private int index_MORMF = 1;
     private int index_MWKRMF = 2;
+    private bool mStarted = false;
 
-
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         StartBatch();
         ClearCategory();
@@ -54,10 +49,16 @@ public class ChartController : MonoBehaviour
             SimulationClock.Instance.OnTimeChanged += ChartChanged;
         }
 
-        string filePath_DelayLog = Path.Combine(Application.dataPath, "Data/DelayLog.xlsx");
-        string filePath_CostLog = Path.Combine(Application.dataPath, "Data/CostLog.xlsx");
-        string filePath_PriorityLogReverse = Path.Combine(Application.dataPath, "Data/PriorityLogReverse.xlsx");
-        string filePath_MoveLog = Path.Combine(Application.dataPath, "Data/MoveLog.xlsx");
+    }
+
+    public void RunChart(string baseDir)
+    {
+        mStarted = true;
+        X = 0;
+        string filePath_DelayLog = Path.Combine(baseDir, "output/DelayLog.xlsx");
+        string filePath_CostLog = Path.Combine(baseDir, "output/CostLog.xlsx");
+        string filePath_PriorityLogReverse = Path.Combine(baseDir, "output/PriorityLogReverse.xlsx");
+        string filePath_MoveLog = Path.Combine(baseDir, "output/MoveLog.xlsx");
 
         MoveCost = ReadExcel(filePath_DelayLog);
         DelayCost = ReadExcel(filePath_CostLog);
@@ -91,6 +92,7 @@ public class ChartController : MonoBehaviour
 
     private void ChartChanged(int newTime)
     {
+        X = newTime;
         if ( newTime % 10 != 0)
         {
             return;
@@ -110,21 +112,25 @@ public class ChartController : MonoBehaviour
         charts[0].DataSource.AddPointToCategoryRealtime(sptmf, X, MoveCost[X].sptmf, 1f);
         charts[0].DataSource.AddPointToCategoryRealtime(mormf, X, MoveCost[X].mormf, 1f);
         charts[0].DataSource.AddPointToCategoryRealtime(mwkrmf, X, MoveCost[X].mwkrmf, 1f);
+        charts[0].HorizontalValueToStringMap[X] = X.ToString();
 
         charts[1].DataSource.AddPointToCategoryRealtime(rl, X, DelayCost[X].rl, 1f);
         charts[1].DataSource.AddPointToCategoryRealtime(sptmf, X, DelayCost[X].sptmf, 1f);
         charts[1].DataSource.AddPointToCategoryRealtime(mormf, X, DelayCost[X].mormf, 1f);
         charts[1].DataSource.AddPointToCategoryRealtime(mwkrmf, X, DelayCost[X].mwkrmf, 1f);
+        charts[1].HorizontalValueToStringMap[X] = X.ToString();
 
         charts[2].DataSource.AddPointToCategoryRealtime(rl, X, PreferenceCost[X].rl, 1f);
         charts[2].DataSource.AddPointToCategoryRealtime(sptmf, X, PreferenceCost[X].sptmf, 1f);
         charts[2].DataSource.AddPointToCategoryRealtime(mormf, X, PreferenceCost[X].mormf, 1f);
         charts[2].DataSource.AddPointToCategoryRealtime(mwkrmf, X, PreferenceCost[X].mwkrmf, 1f);
+        charts[2].HorizontalValueToStringMap[X] = X.ToString();
 
         charts[3].DataSource.AddPointToCategoryRealtime(rl, X, TotalCost[X].rl, 1f);
         charts[3].DataSource.AddPointToCategoryRealtime(sptmf, X, TotalCost[X].sptmf, 1f);
         charts[3].DataSource.AddPointToCategoryRealtime(mormf, X, TotalCost[X].mormf, 1f);
         charts[3].DataSource.AddPointToCategoryRealtime(mwkrmf, X, TotalCost[X].mwkrmf, 1f);
+        charts[3].HorizontalValueToStringMap[X] = X.ToString();
     }
 
     private void StartBatch()
@@ -140,7 +146,7 @@ public class ChartController : MonoBehaviour
             chart.DataSource.EndBatch();
     }
 
-    private void ClearCategory()
+    public void ClearCategory()
     {
         foreach(var chart in charts)
         {
@@ -156,12 +162,13 @@ public class ChartController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!mStarted) return;
         Timer -= Time.deltaTime;
         if (Timer <= 0f)
         {
             Timer = 1f;
             
-            X++;
+            //X++;
         }
     }
 }
