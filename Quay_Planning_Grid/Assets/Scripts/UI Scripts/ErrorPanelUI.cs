@@ -19,8 +19,13 @@ public class ErrorPanelUI : MonoBehaviour
         
     }
 
+    public void clearMessage()
+    {
+        mInputField.text = string.Empty;
+    }
+
     public void setMessage(string error)
     {
-        mInputField.text += $"\n{error}";
+        mInputField.text = $"{error}";
     }
 }

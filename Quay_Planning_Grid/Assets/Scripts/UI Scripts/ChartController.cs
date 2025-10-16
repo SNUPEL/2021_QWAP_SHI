@@ -51,14 +51,14 @@ public class ChartController : MonoBehaviour
 
     }
 
-    public void RunChart(string baseDir)
+    public void RunChart(string ResultDir)
     {
         mStarted = true;
         X = 0;
-        string filePath_DelayLog = Path.Combine(baseDir, "output/DelayLog.xlsx");
-        string filePath_CostLog = Path.Combine(baseDir, "output/CostLog.xlsx");
-        string filePath_PriorityLogReverse = Path.Combine(baseDir, "output/PriorityLogReverse.xlsx");
-        string filePath_MoveLog = Path.Combine(baseDir, "output/MoveLog.xlsx");
+        string filePath_DelayLog = Path.Combine(ResultDir, "DelayLog.xlsx");
+        string filePath_CostLog = Path.Combine(ResultDir, "CostLog.xlsx");
+        string filePath_PriorityLogReverse = Path.Combine(ResultDir, "PriorityLogReverse.xlsx");
+        string filePath_MoveLog = Path.Combine(ResultDir, "MoveLog.xlsx");
 
         MoveCost = ReadExcel(filePath_DelayLog);
         DelayCost = ReadExcel(filePath_CostLog);

@@ -26,7 +26,6 @@ public class Simulation_Data : MonoBehaviour
 #else
         string fullPath = $"{SimulationController.Instance.mResultPath}\\{fileName}";
 #endif
-        SimulationController.Instance.SendError("Full Path: " + fullPath);
         Debug.Log("Looking for CSV at: " + fullPath);
 
         if (!File.Exists(fullPath))

@@ -38,7 +38,7 @@ public class ShipController : MonoBehaviour
         if (simulationClock == null)
             simulationClock = FindObjectOfType<SimulationClock>();
 
-        activeCam = cam1; // now it’s safe
+        activeCam = cam1; // now it?�s safe
 
     }
 
@@ -298,7 +298,7 @@ public class ShipController : MonoBehaviour
     // }
     void ClearUIAndVisualizer()
     {
-        Debug.Log("Clicked outside of ship or quay — clearing visuals and UI.");
+        Debug.Log("Clicked outside of ship or quay ??clearing visuals and UI.");
         rlVisualizer?.ClearQuayMiniHighlights();
         sptVisualizer?.ClearQuayMiniHighlights();
         morVisualizer?.ClearQuayMiniHighlights();

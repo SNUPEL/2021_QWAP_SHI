@@ -26,7 +26,8 @@ public class DashboardUI : MonoBehaviour
     public TextMeshProUGUI textFileName;
     public TextMeshProUGUI textNumberOfQuays;
     public TextMeshProUGUI textNumberOfShips;
-    public UnityEngine.UI.Button runSimulationButton;
+    public UnityEngine.UI.Button SimulateButton;
+    public UnityEngine.UI.Button PlayButton;
 
     private string FilePath = string.Empty;
 
@@ -61,7 +62,8 @@ public class DashboardUI : MonoBehaviour
         UpdateAlgorithmText("RL");
         SetImageActive(RL);
         CurrentMode = SimulationMode.RL;
-        runSimulationButton.interactable = false;
+        SimulateButton.interactable = false;
+        PlayButton.interactable = false;
     }
     private void SetActiveCamera(Camera cam)
     {
@@ -132,7 +134,7 @@ public class DashboardUI : MonoBehaviour
     public void OnRunSimulationClicked()
     {
         SimulationController.Instance?.ResetSimulation();
-        SimulationController.Instance?.Play();
+        SimulationController.Instance?.Simulate();
     }
 
     public void OnPauseButtonClicked() => SimulationController.Instance?.PauseSimulation();
@@ -171,7 +173,7 @@ public class DashboardUI : MonoBehaviour
                     textFileName.text = Path.GetFileNameWithoutExtension(ofd.FileName);
                     this.textNumberOfShips.text = "-";
                     FilePath = ofd.FileName;
-                    runSimulationButton.interactable = true;
+                    SimulateButton.interactable = true;
                     SimulationController.Instance.mSelectedDataSource = SourceType.FindData;
                 }
             }
@@ -197,7 +199,7 @@ public class DashboardUI : MonoBehaviour
         textFileFullPath = string.Empty;
         textFileFullDirectory = string.Empty;
         FilePath = string.Empty;
-        runSimulationButton.interactable = true;
+        SimulateButton.interactable = true;
     }
 
 }

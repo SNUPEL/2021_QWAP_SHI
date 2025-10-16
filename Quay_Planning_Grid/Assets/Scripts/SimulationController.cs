@@ -23,17 +23,18 @@ public class SimulationController : MonoBehaviour
     public SourceType mSelectedDataSource = SourceType.None;
     private string outputDirectory;
 
-    public string mBaseDirectory = string.Empty;
+    public string mPythonScriptDirectory = string.Empty;
     public string mModelPath = string.Empty;
-    public string mDataPath = string.Empty;
+    public string mInputDirectory = string.Empty;
     public string mResultPath = string.Empty;
+    public string mConfigPath = string.Empty;
 
     private void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
     }
-    
+
     public void ResetSimulation()
     {
         UnityEngine.Debug.Log("Simulation reset.");
@@ -102,21 +103,42 @@ public class SimulationController : MonoBehaviour
 
     private void Start()
     {
-        mBaseDirectory = PlayerPrefs.GetString(userSettingPanelUI.mBaseDirectoryKey);
+        mPythonScriptDirectory = PlayerPrefs.GetString(userSettingPanelUI.mBaseDirectoryKey);
         mModelPath = PlayerPrefs.GetString(userSettingPanelUI.mModelPathKey);
-        mDataPath = PlayerPrefs.GetString(userSettingPanelUI.mDataDirectoryKey);
+        mInputDirectory = PlayerPrefs.GetString(userSettingPanelUI.mDataDirectoryKey);
         mResultPath = PlayerPrefs.GetString(userSettingPanelUI.mResultDirectoryKey);
     }
 
-    public void Play()
+    public void Simulate()
     {
         UnityEngine.Debug.Log("Simulation started.");
         StartCoroutine(DelayedSimulationStart());
     }
 
+    public void Play()
+    {
+        try
+        {
+            SimulationClock.Instance._startTime = Time.time;
+            // Now start simulation clock
+            SimulationClock.Instance.simulationStarted = true;
+
+            ShipBuilder.Instance?.InitializeBuilder();
+            SPT_Builder.Instance?.InitializeBuilder();
+            MOR_Builder.Instance?.InitializeBuilder();
+            MWKR_Builder.Instance?.InitializeBuilder();
+
+            chartController.RunChart(mResultPath);
+        }
+        catch (Exception e)
+        {
+            SendError(e.Message);
+        }
+        
+    }
+
     private IEnumerator DelayedSimulationStart()
     {
-        SimulationClock.Instance._startTime = Time.time;
         SimulationClock.Instance.simulationStarted = false;
 
         countdownUI.StartCountdown();
@@ -125,9 +147,6 @@ public class SimulationController : MonoBehaviour
         yield return new WaitForSecondsRealtime(3F); // Delay before sim clock starts
         UnityEngine.Debug.Log("Countdown finished. Starting simulation clock.");
 
-        // Now start simulation clock
-        SimulationClock.Instance.simulationStarted = true;
-
         // Manually force Day 0 ship check
         //ShipBuilder.Instance?.HandleTimeChanged(0);
         //SPT_Builder.Instance?.HandleTimeChanged(0);
@@ -135,44 +154,32 @@ public class SimulationController : MonoBehaviour
         try
         {
             RunAgent();
+            dashboardUI.PlayButton.interactable = true;
 
-            ShipBuilder.Instance?.InitializeBuilder();
-            SPT_Builder.Instance?.InitializeBuilder();
-            MOR_Builder.Instance?.InitializeBuilder();
-            MWKR_Builder.Instance?.InitializeBuilder();
-
-            chartController.RunChart(mBaseDirectory);
         } catch (Exception e)
         {
             SendError(e.Message);
         }
-        
     }
 
     private void RunAgent()
     {
-        string baseDir = mBaseDirectory;
-        string parentDir = Directory.GetParent(baseDir).FullName;
+        string _pythonScriptDir = mPythonScriptDirectory;
         string modelPath = mModelPath;
-        string dataPath = string.Empty;
+        string _inputPath = string.Empty;
         if (mSelectedDataSource == SourceType.GenerateData)
         {
-            GenerateData(baseDir, dashboardUI.textNumberOfShips.text);
-            dataPath = $"{mDataPath}\\{dashboardUI.textNumberOfQuays.text}-{dashboardUI.textNumberOfShips.text}\\instance-1.xlsx";
+            GenerateData(dashboardUI.textNumberOfShips.text);
+            _inputPath = $"{mInputDirectory}\\{dashboardUI.textNumberOfQuays.text}-{dashboardUI.textNumberOfShips.text}\\instance-1.xlsx";
         }
         else
-            dataPath = dashboardUI.textFileFullPath;
+            _inputPath = dashboardUI.textFileFullPath;
         string resPath = mResultPath;
-        string pythonScript = $"{parentDir}\\communicate.py";
-
-        SendError("Data Path: " + dataPath);
-        SendError("Result Path: " + resPath);
-        SendError("Model Path: " + modelPath);
-        SendError("Base Directory: " + baseDir);
+        string pythonScript = $"{_pythonScriptDir}\\communicate.py";
 
         ProcessStartInfo psi = new ProcessStartInfo();
-        psi.FileName = Path.Combine(baseDir, "qwap_env", "python.exe");
-        psi.Arguments = $"{pythonScript} --data_path \"{dataPath}\" --res_path \"{resPath}\" --model_path \"{modelPath}\"";
+        psi.FileName = Path.Combine(_pythonScriptDir, "qwap_env", "python.exe");
+        psi.Arguments = $"{pythonScript} --data_path \"{_inputPath}\" --res_path \"{resPath}\" --model_path \"{modelPath}\"";
         psi.UseShellExecute = false;
         psi.RedirectStandardOutput = true;
         psi.RedirectStandardError = true;
@@ -183,20 +190,21 @@ public class SimulationController : MonoBehaviour
             string _output = process.StandardOutput.ReadToEnd();
             string _error = process.StandardError.ReadToEnd();
             UnityEngine.Debug.Log(_error);
+            if (_error != string.Empty)
+                SendError(_error);
             process.WaitForExit();
         }
     }
 
-    private void GenerateData(string baseDir, string n_ships)
+    private void GenerateData(string n_ships)
     {
-        string configPath = $"{baseDir}\\input\\configurations\\v1\\config (m=28).xlsx";
-        string testDir = $"{baseDir}\\input\\28-{n_ships}";
-        string parentDir = Directory.GetParent(baseDir).FullName;
-        string pythonScript = $"{parentDir}\\data_communicate.py";
+        string configPath = mConfigPath;
+        string InputDir = $"{mInputDirectory}\\28-{n_ships}";
+        string pythonScript = $"{mPythonScriptDirectory}\\data_communicate.py";
 
         ProcessStartInfo psi = new ProcessStartInfo();
-        psi.FileName = Path.Combine(baseDir, "qwap_env", "python.exe");
-        psi.Arguments = $"{pythonScript} --n_ships \"{n_ships}\" --test_dir \"{testDir}\" --config_path \"{configPath}\"";
+        psi.FileName = Path.Combine(mPythonScriptDirectory, "qwap_env", "python.exe");
+        psi.Arguments = $"{pythonScript} --n_ships \"{n_ships}\" --test_dir \"{InputDir}\" --config_path \"{configPath}\"";
         psi.UseShellExecute = false;
         psi.RedirectStandardOutput = true;
         psi.RedirectStandardError = true;

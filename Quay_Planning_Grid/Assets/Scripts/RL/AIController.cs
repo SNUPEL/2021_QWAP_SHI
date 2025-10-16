@@ -166,12 +166,12 @@ public class AIController : MonoBehaviour
         {
             float totalCost = runtime.TotalCost;
 
-            // Example: map totalCost to a 0–1 range for gradient
+            // Example: map totalCost to a 0?? range for gradient
             float minCost = 30000f;      // expected min total cost
             float maxCost = 150000f; // expected max total cost
             float t = Mathf.Clamp01((totalCost - minCost) / (maxCost - minCost));
 
-            // Gradient from white (low cost) → black (high cost)
+            // Gradient from white (low cost) ??black (high cost)
             Color costColor = Color.Lerp(Color.white, Color.black, t);
 
             // Assign to renderer
